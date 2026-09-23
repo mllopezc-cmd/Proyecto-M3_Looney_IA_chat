@@ -1,0 +1,17 @@
+{
+  "name": "proyecto-m3_looney_ia_chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vercel": "^59.23.2",
+    "vitest": "^5.0.1"
+  }
+}
