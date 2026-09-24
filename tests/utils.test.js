@@ -1,5 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
-import { cleanMessage, createMessage, fetchData } from "../src/utils.js";
+import {
+  cleanMessage,
+  createMessage,
+  escapeHTML,
+  fetchData,
+} from "../src/utils.js";
 
 describe("cleanMessage", () => {
   test("elimina espacios al inicio y al final", () => {
@@ -8,6 +13,18 @@ describe("cleanMessage", () => {
 
   test("mantiene un mensaje sin espacios innecesarios", () => {
     expect(cleanMessage("Hola")).toBe("Hola");
+  });
+});
+
+describe("escapeHTML", () => {
+  test("escapa caracteres HTML", () => {
+    expect(escapeHTML('<script>alert("XSS")</script>')).toBe(
+      "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;",
+    );
+  });
+
+  test("mantiene texto normal sin modificaciones", () => {
+    expect(escapeHTML("Hola Bugs")).toBe("Hola Bugs");
   });
 });
 

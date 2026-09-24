@@ -2,6 +2,15 @@ export function cleanMessage(text) {
   return text.trim();
 }
 
+export function escapeHTML(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 export function createMessage(sender, text) {
   return {
     sender,

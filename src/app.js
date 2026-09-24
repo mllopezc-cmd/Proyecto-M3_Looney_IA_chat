@@ -1,4 +1,5 @@
 import { getCharacter, getConversationPreview, renderChat } from "./chat.js";
+import { escapeHTML } from "./utils.js";
 
 const app = document.querySelector("#app");
 
@@ -97,7 +98,7 @@ function renderChatHome() {
                                 : `${conversation.name}:`
                             }
                           </strong>
-                          ${conversation.lastMessage.text}
+                          ${escapeHTML(conversation.lastMessage.text)}
                         </p>
                       `
                       : `
@@ -182,7 +183,7 @@ function renderAbout() {
         <h2>Tecnologías</h2>
 
         <p>
-          HTML, CSS, JavaScript, Vite, Vitest y localStorage.
+          HTML, CSS, JavaScript, Vitest, Vercel y localStorage.
         </p>
       </section>
     </main>

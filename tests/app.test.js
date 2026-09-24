@@ -273,6 +273,26 @@ describe("Chat", () => {
     expect(input.value).toBe("     ");
   });
 
+  test("permite enviar un mensaje después de un envío vacío", () => {
+    renderChat("bugs", appElement);
+
+    input.value = "";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    input.value = "Mensaje después del vacío";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(messagesContainer.innerHTML).toContain("Mensaje después del vacío");
+  });
+
   test("renderChat muestra un mensaje cuando el personaje no existe", () => {
     renderChat("personaje-inexistente", appElement);
 

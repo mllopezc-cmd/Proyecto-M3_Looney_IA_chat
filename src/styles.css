@@ -223,27 +223,6 @@ input:focus-visible {
   color: #555;
 }
 
-.character-card button {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #222;
-  color: #fff;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.character-card button:hover {
-  background: #444;
-}
-
-.character-card button:active {
-  transform: scale(0.98);
-}
-
 /* =========================
    Chat
    ========================= */
@@ -400,25 +379,6 @@ input:focus-visible {
 
 .clear-history:hover {
   background: #eee;
-}
-
-/* =========================
-   About
-   ========================= */
-
-#app > main:not(.home):not(.chat) {
-  width: min(100% - 2rem, 900px);
-  margin: 0 auto;
-  padding: 3rem 0;
-}
-
-#app > main:not(.home):not(.chat) h1 {
-  margin-top: 0;
-}
-
-#app > main:not(.home):not(.chat) p {
-  line-height: 1.6;
-  color: #555;
 }
 
 /* =========================

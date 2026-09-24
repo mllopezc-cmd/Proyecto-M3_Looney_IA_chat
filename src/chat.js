@@ -1,4 +1,4 @@
-import { createMessage } from "./utils.js";
+import { createMessage, escapeHTML } from "./utils.js";
 
 const characters = {
   bugs: {
@@ -117,7 +117,7 @@ function renderMessages(characterId, container) {
     .map(
       (message) => `
         <article class="message message-${message.sender}">
-          <p>${message.text}</p>
+          <p>${escapeHTML(message.text)}</p>
         </article>
       `,
     )
@@ -138,14 +138,14 @@ async function handleSubmit(
     return;
   }
 
-  loadingState.isLoading = true;
-
   const input = event.target.elements.message;
   const text = input.value.trim();
 
   if (!text) {
     return;
   }
+
+  loadingState.isLoading = true;
 
   addMessage(characterId, "user", text);
 

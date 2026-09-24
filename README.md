@@ -1,8 +1,15 @@
 # Looney AI Chat
 
-Aplicación web educativa que presenta una experiencia de chat con personajes de **Looney Tunes**.
+Aplicación web educativa que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial.
 
-El proyecto fue desarrollado como una **POC (Proof of Concept) educativa**, con una arquitectura sencilla y enfocada en practicar conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, pruebas automatizadas y organización básica de una aplicación frontend.
+### 🔗 Enlaces del proyecto
+
+- **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
+- **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat)
+
+---
+
+El proyecto fue desarrollado como una **POC (Proof of Concept) educativa**, con una arquitectura sencilla y enfocada en practicar conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, persistencia local, integración con una API externa, pruebas automatizadas y despliegue en Vercel.
 
 ## Presentación
 
@@ -18,7 +25,9 @@ Cada personaje cuenta con información propia, como descripción, personalidad y
 
 Las conversaciones se almacenan en `localStorage`, permitiendo conservar el historial de cada personaje dentro del navegador.
 
-> **Nota:** La integración con Gemini/API queda preparada para una etapa posterior y no forma parte del estado actual del proyecto.
+La aplicación también integra **Gemini** mediante una función backend ubicada en `api/functions.js`. La clave de API se mantiene como variable de entorno y no se expone directamente en el frontend.
+
+> **Nota:** El proyecto es una POC educativa y no pretende reproducir oficialmente a los personajes ni construir una arquitectura de producción compleja.
 
 ## Características actuales
 
@@ -32,8 +41,13 @@ Las conversaciones se almacenan en `localStorage`, permitiendo conservar el hist
 - Eliminación de la conversación del personaje seleccionado.
 - Manejo de personajes no encontrados.
 - Validación de mensajes vacíos o con espacios.
+- Estados de carga durante la generación de respuestas.
+- Manejo de errores de la API.
+- Integración con Gemini mediante `fetch`.
 - Diseño responsive para dispositivos móviles, tablets y escritorio.
+- Protección del contenido renderizado mediante escape de HTML.
 - Pruebas automatizadas con Vitest.
+- Despliegue mediante Vercel.
 
 ## Rutas principales
 
@@ -57,7 +71,37 @@ También es posible:
 
 - recuperar una conversación existente;
 - continuar una conversación desde el panel de Chat;
-- limpiar la conversación del personaje seleccionado.
+- limpiar la conversación del personaje seleccionado;
+- conservar el historial al navegar entre las diferentes secciones;
+- conservar el historial después de recargar una ruta en producción.
+
+## Integración con Gemini
+
+La aplicación utiliza Gemini para generar las respuestas de los personajes.
+
+La integración se encuentra en:
+
+```text
+api/functions.js
+```
+
+El frontend envía el historial de la conversación y el identificador del personaje a la función backend.
+
+La función:
+
+- valida el método HTTP;
+- valida el personaje solicitado;
+- valida que exista contenido en la conversación;
+- obtiene `GEMINI_API_KEY` desde las variables de entorno;
+- construye las instrucciones del personaje;
+- envía la conversación a Gemini;
+- procesa la respuesta;
+- devuelve únicamente la respuesta generada al frontend;
+- maneja errores de la API.
+
+La clave de API no se almacena en el código frontend ni debe incluirse directamente en el repositorio.
+
+No se utiliza un SDK adicional de Google para la integración; se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
 
 ## Testing
 
@@ -66,8 +110,8 @@ El proyecto utiliza **Vitest** para las pruebas automatizadas.
 Estado actual:
 
 - **2 archivos de pruebas**
-- **39 pruebas**
-- **39 pruebas aprobadas**
+- **42 pruebas**
+- **42 pruebas aprobadas**
 
 Las pruebas cubren principalmente:
 
@@ -83,7 +127,9 @@ Las pruebas cubren principalmente:
 - limpieza del historial;
 - navegación SPA;
 - funciones utilitarias;
-- manejo de respuestas de API.
+- escape de contenido HTML;
+- manejo de respuestas de API;
+- comportamiento después de un envío vacío.
 
 ## Tecnologías
 
@@ -93,6 +139,7 @@ Las pruebas cubren principalmente:
 - Vitest
 - Vercel
 - `localStorage`
+- Gemini API mediante `fetch`
 
 El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su comprensión y presentación como POC educativa.
 
@@ -100,6 +147,7 @@ El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su
 
 ```text
 Looney AI Chat/
+
 ├── api/
 │   └── functions.js
 ├── src/
@@ -119,14 +167,24 @@ Looney AI Chat/
 └── decisiones.md
 ```
 
-El archivo `api/functions.js` se mantiene actualmente vacío y queda reservado para una futura etapa de integración con servicios externos.
+### Responsabilidad de los principales archivos
+
+- `src/app.js`: navegación SPA, renderizado de Home, About y elementos generales de la aplicación.
+- `src/chat.js`: lógica de personajes, conversaciones, persistencia y comunicación con la API.
+- `src/utils.js`: funciones utilitarias y escape de contenido HTML.
+- `src/styles.css`: estilos y diseño responsive.
+- `src/index.html`: estructura HTML inicial de la aplicación.
+- `api/functions.js`: integración backend con Gemini.
+- `tests/app.test.js`: pruebas de aplicación, navegación y chat.
+- `tests/utils.test.js`: pruebas de funciones utilitarias.
 
 ## Instalación
 
 Clonar el repositorio y acceder al directorio del proyecto:
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat.git
+
 cd Proyecto-M3_Looney_IA_chat
 ```
 
@@ -136,9 +194,9 @@ Instalar las dependencias:
 npm install
 ```
 
-## Ejecución
+## Ejecución y testing
 
-Para ejecutar las pruebas:
+Para ejecutar las pruebas automatizadas:
 
 ```bash
 npm test
@@ -158,20 +216,44 @@ El proyecto incluye un archivo `.env.example` como referencia:
 GEMINI_API_KEY=
 ```
 
-La variable queda preparada para una futura integración con Gemini. La clave real no debe incluirse en el repositorio.
+Para ejecutar la integración con Gemini se debe configurar la variable `GEMINI_API_KEY` en el entorno correspondiente.
 
-## Demo
+La clave real **no debe incluirse en el repositorio**.
 
-La publicación final en Vercel se incorporará posteriormente.
+## Despliegue
 
-**Vercel:** `Pendiente de publicación`
+El proyecto se encuentra desplegado en **Vercel**.
+
+La aplicación fue validada en producción incluyendo:
+
+- navegación entre Home, Chat y About;
+- conversaciones independientes por personaje;
+- generación de respuestas mediante Gemini;
+- persistencia del historial;
+- recarga directa de las rutas;
+- recarga mediante `F5`;
+- rutas con `character` mediante query string.
+
+Para permitir la recarga directa de las rutas SPA en producción se utilizaron **CDN Routing Rules de Vercel**, realizando rewrites hacia la aplicación principal.
+
+Las reglas utilizadas son:
+
+```text
+/chat  → /
+/about → /
+/home  → /
+```
+
+No fue necesario incorporar un archivo `vercel.json` para esta solución.
+
+**Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
 
 ## Documentación
 
-La documentación del proyecto se concentra en los siguientes archivos:
+La documentación principal del proyecto se concentra en los siguientes archivos:
 
-- [`README.md`](README.md) — presentación general, características y forma de ejecución.
-- [`decisiones.md`](decisiones.md) — principales decisiones tomadas durante el desarrollo.
+- [`README.md`](README.md) — presentación general, características, arquitectura y forma de ejecución.
+- [`decisiones.md`](decisiones.md) — principales decisiones tomadas durante el desarrollo y los criterios utilizados para mantener una arquitectura sencilla.
 
 ## Estado del proyecto
 
@@ -182,12 +264,16 @@ La documentación del proyecto se concentra en los siguientes archivos:
 - [x] Separación de historiales por personaje
 - [x] Mejoras visuales y responsive
 - [x] Implementación de pruebas automatizadas
+- [x] Integración con Gemini
 - [x] Validación automática
 - [x] Validación manual
 - [x] Revisión final del código
+- [x] Despliegue en Vercel
+- [x] Validación de rutas en producción
+- [x] Validación de recarga mediante `F5` en producción
 - [x] Preparación de documentación
-- [ ] Publicación final en Vercel
-- [ ] Integración futura con Gemini
+- [ ] Commit final
+- [ ] Push final
 
 ## Consideraciones de la validación local
 
@@ -195,7 +281,11 @@ Durante la validación con `npx vercel dev`, la navegación interna de la SPA fu
 
 Sin embargo, al realizar una recarga directa mediante `F5` sobre rutas como `/chat` o `/chat?character=...`, el entorno local puede responder con `404`.
 
-Esta situación queda registrada como una limitación de la validación local. No se incorpora una configuración adicional únicamente para resolver este comportamiento, ya que no forma parte del alcance actual de la POC.
+Esta situación corresponde al comportamiento observado en el entorno local de desarrollo de Vercel.
+
+En producción, este comportamiento fue resuelto mediante las **CDN Routing Rules de Vercel**, permitiendo que las rutas SPA puedan recargarse directamente sin devolver `404`.
+
+No se incorpora un `vercel.json` únicamente para resolver la diferencia del entorno local.
 
 ## Enfoque del proyecto
 
@@ -208,7 +298,11 @@ Por esta razón se priorizaron:
 - pocas dependencias;
 - pruebas automatizadas;
 - persistencia local;
+- integración backend mínima;
+- protección básica del contenido renderizado;
 - cambios controlados;
 - facilidad de mantenimiento y explicación.
 
-La integración con servicios de inteligencia artificial y la publicación definitiva en Vercel quedan como etapas posteriores.
+La integración con Gemini se implementó mediante una función backend sencilla y `fetch`, evitando agregar dependencias innecesarias.
+
+El proyecto queda preparado para su presentación como una POC educativa, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y despliegue funcional en Vercel.
