@@ -126,8 +126,19 @@ function renderMessages(characterId, container) {
   container.scrollTop = container.scrollHeight;
 }
 
-function handleSubmit(event, characterId, messagesContainer) {
+async function handleSubmit(
+  event,
+  characterId,
+  messagesContainer,
+  loadingState,
+) {
   event.preventDefault();
+
+  if (loadingState.isLoading) {
+    return;
+  }
+
+  loadingState.isLoading = true;
 
   const input = event.target.elements.message;
   const text = input.value.trim();
@@ -141,6 +152,66 @@ function handleSubmit(event, characterId, messagesContainer) {
   input.value = "";
 
   renderMessages(characterId, messagesContainer);
+
+  input.disabled = true;
+
+  messagesContainer.innerHTML += `
+  <article class="message message-loading" aria-live="polite">
+    <p>Escribiendo...</p>
+  </article>
+`;
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  try {
+    const conversation = getConversation(characterId);
+
+    const response = await fetch("/api/functions.js", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        characterId,
+        history: conversation,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo obtener una respuesta.");
+    }
+
+    addMessage(characterId, "character", data.reply);
+
+    renderMessages(characterId, messagesContainer);
+  } catch (error) {
+    messagesContainer.innerHTML += `
+    <article class="message message-error" aria-live="polite">
+      <p>Lo siento, no pude responder en este momento. Inténtalo nuevamente.</p>
+    </article>
+  `;
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  } finally {
+    messagesContainer.innerHTML = messagesContainer.innerHTML.replace(
+      `
+  <article class="message message-loading" aria-live="polite">
+    <p>Escribiendo...</p>
+  </article>
+`,
+      "",
+    );
+
+    input.disabled = false;
+
+    if (typeof input.focus === "function") {
+      input.focus();
+    }
+
+    loadingState.isLoading = false;
+  }
 }
 
 export function renderChat(characterId, app) {
@@ -196,6 +267,9 @@ export function renderChat(characterId, app) {
   const messagesContainer = app.querySelector(".chat-messages");
   const form = app.querySelector(".chat-form");
   const clearHistoryButton = app.querySelector("#clear-history");
+  const loadingState = {
+    isLoading: false,
+  };
 
   const conversation = getConversation(characterId);
 
@@ -206,7 +280,7 @@ export function renderChat(characterId, app) {
   renderMessages(characterId, messagesContainer);
 
   form.addEventListener("submit", (event) => {
-    handleSubmit(event, characterId, messagesContainer);
+    handleSubmit(event, characterId, messagesContainer, loadingState);
   });
 
   clearHistoryButton.addEventListener("click", () => {
