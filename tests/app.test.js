@@ -637,7 +637,7 @@ describe("Navegación SPA", () => {
     expect(windowMock.history.pushState).toHaveBeenCalledWith({}, "", "/about");
 
     expect(windowMock.location.pathname).toBe("/about");
-    expect(appElement.innerHTML).toContain("About");
+    expect(appElement.innerHTML).toContain("Sobre Looney AI Chat");
   });
 
   test("ejecuta el router cuando cambia la navegación mediante popstate", () => {
@@ -646,7 +646,7 @@ describe("Navegación SPA", () => {
 
     popstateHandler();
 
-    expect(appElement.innerHTML).toContain("About");
+    expect(appElement.innerHTML).toContain("Sobre Looney AI Chat");
   });
 
   test("permite regresar a Home mediante popstate", () => {

@@ -23,7 +23,7 @@ Actualmente se encuentran disponibles:
 
 Cada personaje cuenta con información propia, como descripción, personalidad y saludo inicial.
 
-Las conversaciones se almacenan en `localStorage`, permitiendo conservar el historial de cada personaje dentro del navegador.
+Las conversaciones se almacenan en `localStorage`, permitiendo conservar el historial independiente de cada personaje dentro del navegador.
 
 La aplicación también integra **Gemini** mediante una función backend ubicada en `api/functions.js`. La clave de API se mantiene como variable de entorno y no se expone directamente en el frontend.
 
@@ -38,12 +38,18 @@ La aplicación también integra **Gemini** mediante una función backend ubicada
 - Historial independiente para cada personaje.
 - Persistencia de conversaciones mediante `localStorage`.
 - Recuperación de conversaciones existentes.
+- Panel de **Mis conversaciones**.
+- Visualización del último mensaje de cada conversación.
+- Continuación de conversaciones existentes.
 - Eliminación de la conversación del personaje seleccionado.
+- Restauración del saludo inicial después de limpiar una conversación.
 - Manejo de personajes no encontrados.
 - Validación de mensajes vacíos o con espacios.
-- Estados de carga durante la generación de respuestas.
+- Indicador visual de escritura durante la generación de respuestas.
+- Watermark visual asociado al personaje seleccionado.
 - Manejo de errores de la API.
 - Integración con Gemini mediante `fetch`.
+- Modo claro y modo oscuro con persistencia de la preferencia.
 - Diseño responsive para dispositivos móviles, tablets y escritorio.
 - Protección del contenido renderizado mediante escape de HTML.
 - Pruebas automatizadas con Vitest.
@@ -71,9 +77,12 @@ También es posible:
 
 - recuperar una conversación existente;
 - continuar una conversación desde el panel de Chat;
+- visualizar el último mensaje registrado;
 - limpiar la conversación del personaje seleccionado;
 - conservar el historial al navegar entre las diferentes secciones;
-- conservar el historial después de recargar una ruta en producción.
+- restaurar correctamente el historial asociado al personaje seleccionado.
+
+La persistencia mediante recarga directa de las rutas en producción se comprobará durante la validación final del despliegue en Vercel.
 
 ## Integración con Gemini
 
@@ -103,6 +112,8 @@ La clave de API no se almacena en el código frontend ni debe incluirse directam
 
 No se utiliza un SDK adicional de Google para la integración; se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
 
+La validación definitiva de la integración con Gemini en producción se realizará durante el despliegue final en Vercel.
+
 ## Testing
 
 El proyecto utiliza **Vitest** para las pruebas automatizadas.
@@ -131,6 +142,22 @@ Las pruebas cubren principalmente:
 - manejo de respuestas de API;
 - comportamiento después de un envío vacío.
 
+Además de las pruebas automatizadas, se realizó una validación manual de:
+
+- navegación entre las rutas;
+- selección de personajes;
+- conversaciones independientes;
+- recuperación del historial;
+- limpieza de conversaciones;
+- diseño responsive;
+- modo claro y oscuro;
+- menú de navegación;
+- perfil de los personajes;
+- watermark;
+- indicador de escritura;
+- página About;
+- casos límite principales.
+
 ## Tecnologías
 
 - HTML
@@ -152,6 +179,11 @@ Looney AI Chat/
 │   └── functions.js
 ├── src/
 │   ├── app.js
+│   ├── assets/
+│   │   └── characters/
+│   │       ├── bugs-bunny.webp
+│   │       ├── silvestre.webp
+│   │       └── pato-lucas.webp
 │   ├── chat.js
 │   ├── index.html
 │   ├── styles.css
@@ -169,14 +201,15 @@ Looney AI Chat/
 
 ### Responsabilidad de los principales archivos
 
-- `src/app.js`: navegación SPA, renderizado de Home, About y elementos generales de la aplicación.
+- `src/app.js`: navegación SPA, renderizado de Home, About, panel de conversaciones y elementos generales de la aplicación.
 - `src/chat.js`: lógica de personajes, conversaciones, persistencia y comunicación con la API.
 - `src/utils.js`: funciones utilitarias y escape de contenido HTML.
-- `src/styles.css`: estilos y diseño responsive.
+- `src/styles.css`: estilos, modo claro/oscuro y diseño responsive.
 - `src/index.html`: estructura HTML inicial de la aplicación.
 - `api/functions.js`: integración backend con Gemini.
 - `tests/app.test.js`: pruebas de aplicación, navegación y chat.
 - `tests/utils.test.js`: pruebas de funciones utilitarias.
+- `src/assets/characters/`: imágenes locales utilizadas para representar a los personajes.
 
 ## Instalación
 
@@ -222,9 +255,9 @@ La clave real **no debe incluirse en el repositorio**.
 
 ## Despliegue
 
-El proyecto se encuentra desplegado en **Vercel**.
+El proyecto se encuentra preparado para su despliegue en **Vercel**.
 
-La aplicación fue validada en producción incluyendo:
+Durante la validación final en producción se comprobarán:
 
 - navegación entre Home, Chat y About;
 - conversaciones independientes por personaje;
@@ -234,17 +267,9 @@ La aplicación fue validada en producción incluyendo:
 - recarga mediante `F5`;
 - rutas con `character` mediante query string.
 
-Para permitir la recarga directa de las rutas SPA en producción se utilizaron **CDN Routing Rules de Vercel**, realizando rewrites hacia la aplicación principal.
+La necesidad de utilizar reglas de rewrite para las rutas SPA se determinará durante esta validación.
 
-Las reglas utilizadas son:
-
-```text
-/chat  → /
-/about → /
-/home  → /
-```
-
-No fue necesario incorporar un archivo `vercel.json` para esta solución.
+Por el momento **no se incorpora un archivo `vercel.json`**, ya que se acordó comprobar primero el comportamiento real de las rutas en Vercel.
 
 **Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
 
@@ -268,10 +293,10 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [x] Validación automática
 - [x] Validación manual
 - [x] Revisión final del código
-- [x] Despliegue en Vercel
-- [x] Validación de rutas en producción
-- [x] Validación de recarga mediante `F5` en producción
-- [x] Preparación de documentación
+- [x] Revisión de documentación
+- [x] Preparación para despliegue en Vercel
+- [ ] Validación definitiva de Gemini en producción
+- [ ] Validación de rutas SPA y recarga mediante `F5` en producción
 - [ ] Commit final
 - [ ] Push final
 
@@ -283,9 +308,9 @@ Sin embargo, al realizar una recarga directa mediante `F5` sobre rutas como `/ch
 
 Esta situación corresponde al comportamiento observado en el entorno local de desarrollo de Vercel.
 
-En producción, este comportamiento fue resuelto mediante las **CDN Routing Rules de Vercel**, permitiendo que las rutas SPA puedan recargarse directamente sin devolver `404`.
+La validación definitiva de este comportamiento se realizará directamente en producción, una vez realizado el despliegue.
 
-No se incorpora un `vercel.json` únicamente para resolver la diferencia del entorno local.
+No se incorpora un `vercel.json` únicamente para resolver la diferencia del entorno local. Primero se comprobará si Vercel requiere una regla de rewrite para las rutas SPA.
 
 ## Enfoque del proyecto
 
@@ -305,4 +330,6 @@ Por esta razón se priorizaron:
 
 La integración con Gemini se implementó mediante una función backend sencilla y `fetch`, evitando agregar dependencias innecesarias.
 
-El proyecto queda preparado para su presentación como una POC educativa, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y despliegue funcional en Vercel.
+Las imágenes de los personajes se mantienen como recursos locales dentro de `src/assets/characters/`, evitando dependencias externas para su presentación visual.
+
+El proyecto queda preparado para su presentación como una POC educativa, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y preparación para su despliegue en Vercel.

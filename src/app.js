@@ -3,6 +3,12 @@ import { escapeHTML } from "./utils.js";
 
 const app = document.querySelector("#app");
 
+const characterImages = {
+  bugs: "./assets/characters/bugs-bunny.webp",
+  silvestre: "./assets/characters/silvestre.webp",
+  lucas: "./assets/characters/pato-lucas.webp",
+};
+
 function renderHome() {
   const characters = ["bugs", "silvestre", "lucas"];
 
@@ -22,28 +28,37 @@ function renderHome() {
           ${characters
             .map((characterId) => {
               const character = getCharacter(characterId);
+              const characterImage = characterImages[characterId];
 
               return `
                 <article class="character-card">
-                  <div class="character-avatar" aria-hidden="true">
-                    ${character.name.charAt(0)}
+                  <div class="character-image-wrapper">
+                    <img
+                      class="character-image"
+                      src="${characterImage}"
+                      alt="${character.name}"
+                    />
                   </div>
 
-                  <h3>${character.name}</h3>
+                  <div class="character-content">
+                    <h3>${character.name}</h3>
 
-                  <p>${character.description}</p>
+                    <p class="character-personality">
+                      ${character.personality}
+                    </p>
 
-                  <p class="character-personality">
-                    ${character.personality}
-                  </p>
+                    <p class="character-description">
+                      ${character.description}
+                    </p>
 
-                  <a
-                    class="character-link"
-                    href="/chat?character=${characterId}"
-                    data-character="${characterId}"
-                  >
-                    Chatear con ${character.name}
-                  </a>
+                    <a
+                      class="character-link"
+                      href="/chat?character=${characterId}"
+                      data-character="${characterId}"
+                    >
+                      Chatear con ${character.name}
+                    </a>
+                  </div>
                 </article>
               `;
             })
@@ -78,7 +93,11 @@ function renderChatHome() {
             (conversation) => `
               <article class="conversation-card">
                 <div class="conversation-avatar">
-                  ${conversation.name.charAt(0)}
+                  <img
+                    class="conversation-avatar-image"
+                    src="${characterImages[conversation.id]}"
+                    alt="${conversation.name}"
+                  />
                 </div>
 
                 <div class="conversation-content">
@@ -139,27 +158,54 @@ function renderAbout() {
   app.innerHTML = `
     <main class="about">
       <header class="about-header">
-        <h1>Sobre el proyecto</h1>
+        <h1>Sobre Looney AI Chat</h1>
+
         <p>
-          Looney AI Chat es una aplicación web que permite
-          conversar con personajes de Looney Tunes mediante
-          una interfaz de chat.
+          Una experiencia de conversación con tus personajes
+          favoritos de Looney Tunes mediante inteligencia artificial.
         </p>
       </header>
 
       <section class="about-section">
-        <h2>Funcionalidades</h2>
+        <h2>Características</h2>
 
-        <ul>
-          <li>Navegación entre Home, Chat y About.</li>
-          <li>Selección de personajes desde Home.</li>
-          <li>URLs individuales para cada personaje.</li>
-          <li>Persistencia de conversaciones en localStorage.</li>
-        </ul>
+        <div class="about-features">
+          <article class="about-feature">
+            <h3>🤖 Inteligencia artificial</h3>
+            <p>
+              Genera respuestas para crear conversaciones
+              dinámicas con los personajes.
+            </p>
+          </article>
+
+          <article class="about-feature">
+            <h3>💬 Conversaciones</h3>
+            <p>
+              Cada personaje mantiene su propia conversación
+              para que puedas retomarla posteriormente.
+            </p>
+          </article>
+
+          <article class="about-feature">
+            <h3>🎭 Personajes</h3>
+            <p>
+              Personajes clásicos de Looney Tunes, conocidos por sus
+              personalidades únicas, situaciones humorísticas y aventuras.
+            </p>
+          </article>
+
+          <article class="about-feature">
+            <h3>📱 Experiencia responsive</h3>
+            <p>
+              La interfaz está adaptada para utilizarse
+              cómodamente desde diferentes dispositivos.
+            </p>
+          </article>
+        </div>
       </section>
 
       <section class="about-section">
-        <h2>Personajes</h2>
+        <h2>Personajes disponibles</h2>
 
         <div class="about-characters">
           ${characters
@@ -167,7 +213,9 @@ function renderAbout() {
               (character) => `
                 <article class="about-character">
                   <h3>${character.name}</h3>
+
                   <p>${character.description}</p>
+
                   <p>
                     <strong>Personalidad:</strong>
                     ${character.personality}
@@ -179,11 +227,23 @@ function renderAbout() {
         </div>
       </section>
 
+      <section class="about-action">
+        <h2>¿Listo para conversar?</h2>
+
+        <p>
+          Elige un personaje y comienza tu conversación.
+        </p>
+
+        <a class="about-action-link" href="/home">
+          Comenzar a conversar
+        </a>
+      </section>
+
       <section class="about-section">
         <h2>Tecnologías</h2>
 
-        <p>
-          HTML, CSS, JavaScript, Vitest, Vercel y localStorage.
+        <p class="about-technologies">
+          HTML · CSS · JavaScript · Vitest · Vercel · localStorage
         </p>
       </section>
     </main>
@@ -285,6 +345,29 @@ document.addEventListener("click", (event) => {
 });
 
 window.addEventListener("popstate", router);
+
+const themeToggle = document.querySelector("#theme-toggle");
+const savedTheme = localStorage.getItem("looney-theme");
+
+if (themeToggle) {
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "☀️";
+    themeToggle.setAttribute("aria-label", "Activar modo claro");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const isDarkMode = document.body.classList.toggle("dark-mode");
+
+    themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+    themeToggle.setAttribute(
+      "aria-label",
+      isDarkMode ? "Activar modo claro" : "Activar modo oscuro",
+    );
+
+    localStorage.setItem("looney-theme", isDarkMode ? "dark" : "light");
+  });
+}
 
 router();
 

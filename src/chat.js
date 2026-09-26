@@ -30,6 +30,12 @@ const characters = {
 
 const STORAGE_KEY = "looney-chat-history";
 
+const characterImages = {
+  bugs: "./assets/characters/bugs-bunny.webp",
+  silvestre: "./assets/characters/silvestre.webp",
+  lucas: "./assets/characters/pato-lucas.webp",
+};
+
 const conversations = loadConversations();
 
 function loadConversations() {
@@ -77,8 +83,13 @@ export function getConversationPreview() {
     const character = characters[characterId];
     const conversation = conversations[characterId] || [];
 
-    const lastMessage =
-      conversation.length > 0 ? conversation[conversation.length - 1] : null;
+    const hasUserMessage = conversation.some(
+      (message) => message.sender === "user",
+    );
+
+    const lastMessage = hasUserMessage
+      ? conversation[conversation.length - 1]
+      : null;
 
     return {
       id: characterId,
@@ -113,15 +124,24 @@ function clearConversation(characterId) {
 function renderMessages(characterId, container) {
   const conversation = getConversation(characterId);
 
-  container.innerHTML = conversation
-    .map(
-      (message) => `
-        <article class="message message-${message.sender}">
-          <p>${escapeHTML(message.text)}</p>
-        </article>
-      `,
-    )
-    .join("");
+  container.innerHTML = `
+    <div class="chat-watermark" aria-hidden="true">
+      <img
+        src="${characterImages[characterId]}"
+        alt=""
+      />
+    </div>
+
+    ${conversation
+      .map(
+        (message) => `
+          <article class="message message-${message.sender}">
+            <p>${escapeHTML(message.text)}</p>
+          </article>
+        `,
+      )
+      .join("")}
+  `;
 
   container.scrollTop = container.scrollHeight;
 }
@@ -156,10 +176,25 @@ async function handleSubmit(
   input.disabled = true;
 
   messagesContainer.innerHTML += `
-  <article class="message message-loading" aria-live="polite">
-    <p>Escribiendo...</p>
+  <article
+    class="message message-loading"
+    id="message-loading"
+    aria-live="polite"
+  >
+    <p>Escribiendo.</p>
   </article>
 `;
+
+  let dots = 1;
+
+  const typingInterval = setInterval(() => {
+    dots = dots === 3 ? 1 : dots + 1;
+
+    messagesContainer.innerHTML = messagesContainer.innerHTML.replace(
+      /Escribiendo\.{1,3}/,
+      `Escribiendo${".".repeat(dots)}`,
+    );
+  }, 500);
 
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
@@ -195,12 +230,10 @@ async function handleSubmit(
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   } finally {
+    clearInterval(typingInterval);
+
     messagesContainer.innerHTML = messagesContainer.innerHTML.replace(
-      `
-  <article class="message message-loading" aria-live="polite">
-    <p>Escribiendo...</p>
-  </article>
-`,
+      /<article[^>]*id="message-loading"[^>]*>[\s\S]*?<\/article>/,
       "",
     );
 
@@ -231,8 +264,20 @@ export function renderChat(characterId, app) {
   app.innerHTML = `
     <main class="chat">
       <header class="chat-header">
-        <h1>${character.name}</h1>
-        <p>${character.description}</p>
+        <div class="chat-profile">
+          <img
+            class="chat-profile-image"
+            src="${characterImages[characterId]}"
+            alt="${character.name}"
+          />
+
+          <div class="chat-profile-info">
+            <h1>${character.name}</h1>
+            <p>${character.personality}</p>
+          </div>
+        </div>
+
+        <p class="chat-description">${character.description}</p>
       </header>
 
       <section

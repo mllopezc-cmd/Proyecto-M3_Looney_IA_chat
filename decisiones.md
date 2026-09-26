@@ -94,7 +94,9 @@
 
 - Se verificó que las conversaciones permanecieran separadas al cambiar entre Bugs Bunny, Silvestre y Pato Lucas.
 
-- También se verificó que el historial pudiera recuperarse después de navegar entre las diferentes vistas y después de recargar una ruta en producción.
+- También se verificó que el historial pudiera recuperarse después de navegar entre las diferentes vistas.
+
+- La validación específica de persistencia mediante recarga directa de rutas en producción queda incluida dentro de la comprobación final de Vercel.
 
 - Se decidió mantener el historial asociado al identificador del personaje, evitando que una conversación afecte a otra.
 
@@ -143,11 +145,23 @@
 
 - Se mejoró la presentación de los personajes mediante información adicional como personalidad y saludo.
 
+- Se incorporaron imágenes locales para la presentación visual de Bugs Bunny, Silvestre y Pato Lucas, evitando dependencias de imágenes externas o CDNs.
+
 - Se mantuvo la separación del historial por personaje durante estas mejoras.
 
 - Se adaptó la interfaz para dispositivos móviles, tablets y escritorio mediante estilos responsive.
 
 - Se incorporó una presentación más completa de la información de los personajes sin modificar la lógica principal del chat.
+
+- Se incorporó un perfil visual del personaje dentro de la vista de chat.
+
+- Se añadió una marca de agua visual del personaje dentro del área de conversación.
+
+- Se incorporó un indicador de escritura mientras se espera la respuesta de la IA.
+
+- Se incorporó un modo oscuro con persistencia de la preferencia mediante `localStorage`.
+
+- Se mejoró la vista **Mis conversaciones**, mostrando el personaje, su personalidad, la última interacción disponible y una acción para continuar o iniciar la conversación.
 
 - Se eliminaron estilos CSS heredados que ya no correspondían con la estructura actual de la interfaz.
 
@@ -192,7 +206,9 @@
 
 - Se mantuvo [`.env.example`](.env.example) como referencia para indicar la variable requerida sin exponer la clave real.
 
-- La integración fue validada mediante pruebas automatizadas y posteriormente mediante pruebas manuales en la aplicación desplegada.
+- La integración con Gemini quedó implementada y preparada para la validación funcional en el deployment final de Vercel.
+
+- La comprobación de la comunicación real con Gemini en producción forma parte de la validación final del deployment y no se considera sustituida por las pruebas automatizadas.
 
 ## 10. Revisión y corrección del código
 
@@ -210,19 +226,19 @@
 
 - Se actualizó la información tecnológica mostrada en la vista About para que correspondiera con las herramientas realmente utilizadas en el proyecto.
 
+- Se revisó la estructura final del proyecto para mantener únicamente los archivos necesarios para el alcance definido.
+
 - Después de estas modificaciones se ejecutaron nuevamente las pruebas automatizadas y se obtuvo el resultado de **42 pruebas aprobadas**.
 
 ## 11. Producción y deployment
 
 - Se decidió utilizar **Vercel** como plataforma de deployment del proyecto.
 
-- El deployment se realizó después de completar y validar las funcionalidades principales.
+- El deployment se preparó después de completar y validar las funcionalidades principales.
 
-- La aplicación se encuentra actualmente desplegada en Vercel:
+- La aplicación cuenta con un deployment en Vercel para realizar la comprobación final de producción.
 
-  [Looney AI Chat — Demo](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
-
-- Durante la validación de producción se comprobaron:
+- La validación definitiva del deployment contempla comprobar:
   - navegación entre Home, Chat y About;
   - selección de personajes;
   - conversaciones independientes;
@@ -233,7 +249,7 @@
   - recarga mediante `F5`;
   - rutas con `character` mediante query string.
 
-- Se decidió mantener la configuración de deployment fuera del código de la aplicación cuando Vercel permitiera resolver el comportamiento directamente desde su configuración.
+- Se decidió mantener la configuración de deployment fuera del código de la aplicación cuando Vercel permita resolver el comportamiento directamente desde su configuración.
 
 ## 12. Manejo de rutas SPA en producción
 
@@ -241,21 +257,26 @@
 
 - Inicialmente se decidió no incorporar un `vercel.json` únicamente para resolver este comportamiento local, ya que la navegación interna de la SPA funcionaba correctamente.
 
-- Durante la preparación de producción se resolvió el comportamiento de las rutas mediante **CDN Routing Rules de Vercel**.
+- Para la etapa de producción se contempla utilizar las herramientas de routing disponibles en Vercel para resolver las rutas SPA si la validación demuestra que son necesarias.
 
-- Las reglas utilizadas realizan los siguientes rewrites:
+- La comprobación en Vercel deberá confirmar específicamente el comportamiento de:
 
   ```text
-  /chat  → /
-  /about → /
-  /home  → /
+  /home
+  /chat
+  /chat?character=bugs
+  /about
   ```
 
-- Esta solución permite que las rutas SPA puedan ser recargadas directamente en producción sin devolver `404`.
+  tanto mediante navegación interna como mediante recarga directa.
 
-- Se decidió no agregar un `vercel.json`, evitando incorporar un archivo adicional al repositorio cuando la misma necesidad podía resolverse mediante la configuración de Vercel.
+- Si las rutas funcionan correctamente en producción sin incorporar configuración adicional, se mantendrá la solución actual.
 
-- La diferencia entre el comportamiento local y el comportamiento de producción se mantiene documentada como una consideración del entorno de desarrollo.
+- Si la recarga directa devuelve `404`, se incorporará únicamente la configuración mínima necesaria para resolver el comportamiento, evitando afectar la función backend ubicada en `/api`.
+
+- Se decidió no agregar un `vercel.json` de forma preventiva mientras no exista una necesidad comprobada en el deployment real.
+
+- La diferencia observada entre el comportamiento local y el comportamiento esperado en producción se mantiene documentada como una consideración del entorno de desarrollo hasta completar esta comprobación.
 
 ## 13. Validación final
 
@@ -265,7 +286,7 @@
 
 - La validación automática final alcanzó **42 pruebas aprobadas**.
 
-- La validación manual confirmó el funcionamiento de:
+- La validación manual realizada hasta el momento confirmó el funcionamiento de:
   - navegación SPA;
   - selección de personajes;
   - conversaciones independientes;
@@ -273,17 +294,26 @@
   - limpieza del historial;
   - estados de carga;
   - manejo de errores;
-  - integración con Gemini;
+  - diseño responsive;
+  - modo claro y oscuro;
   - navegación hacia atrás y adelante;
-  - recarga de rutas en producción;
+  - vista de conversaciones;
+  - presentación visual de los personajes;
+  - página About.
+
+- La validación de producción pendiente comprende específicamente:
+  - integración real con Gemini en Vercel;
+  - persistencia después de recargar;
+  - recarga directa de rutas;
   - recarga mediante `F5`;
-  - diseño responsive.
+  - funcionamiento de las rutas con query string;
+  - comportamiento final del deployment.
 
 - Se realizó además una revisión final del código para identificar errores, código heredado y posibles mejoras sin aumentar innecesariamente la complejidad.
 
-- Después de la revisión se confirmó que no era necesario incorporar nuevas dependencias ni nuevos archivos para completar el alcance definido.
+- Después de la revisión se confirmó que no era necesario incorporar nuevas dependencias ni nuevos archivos para completar el alcance definido hasta esta etapa.
 
-- No se incorporaron nuevas funcionalidades durante la última etapa; el objetivo fue estabilizar y validar el estado alcanzado antes de pasar al cierre y documentación.
+- No se incorporaron nuevas funcionalidades durante la última etapa; el objetivo fue estabilizar y validar el estado alcanzado antes del cierre y la documentación.
 
 ## 14. Alcance y complejidad
 
@@ -299,7 +329,9 @@
 
 - La integración backend se mantuvo mínima, utilizando únicamente la función necesaria para comunicarse con Gemini.
 
-- Se evitó agregar configuraciones adicionales cuando podían resolverse mediante las herramientas ya utilizadas, como ocurrió con las rutas SPA en producción mediante las CDN Routing Rules de Vercel.
+- Se evitó agregar configuraciones adicionales mientras no fueran necesarias para resolver un problema comprobado en el deployment.
+
+- La estrategia de routing de producción se verificará antes de incorporar archivos adicionales como `vercel.json`.
 
 ## 15. Principio general de las decisiones
 
@@ -309,14 +341,18 @@ Las decisiones del proyecto siguieron un criterio común:
 
 A medida que el proyecto evolucionó, las decisiones iniciales fueron revisadas cuando el estado real de la aplicación lo requirió.
 
-La integración con **Gemini**, el **deployment en Vercel**, la solución de las rutas SPA en producción, las mejoras visuales y la protección del contenido renderizado se incorporaron únicamente después de validar que aportaban valor al funcionamiento final del POC.
+La integración con **Gemini**, la preparación del **deployment en Vercel**, las mejoras visuales y la protección del contenido renderizado se incorporaron únicamente después de validar que aportaban valor al funcionamiento final del POC.
 
-El resultado es una aplicación educativa con una arquitectura sencilla, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, integración con inteligencia artificial y deployment funcional en Vercel.
+La solución de las rutas SPA en producción se mantiene como una comprobación específica de la etapa final de deployment, evitando incorporar configuración adicional antes de comprobar su necesidad real.
+
+El resultado alcanzado es una aplicación educativa con una arquitectura sencilla, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, integración con inteligencia artificial y preparación para su validación final en Vercel.
 
 ### Enlaces relacionados
 
-- [README.md](README.md) — presentación, instalación, características y estado del proyecto.
+- [`README.md`](README.md) — presentación, instalación, características y estado del proyecto.
+
 - [Demo en Vercel](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
+
 - [Repositorio en GitHub](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat)
 
 [⬆️ Volver al inicio](#inicio)
