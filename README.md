@@ -2,10 +2,10 @@
 
 Aplicación web educativa que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial.
 
-### 🔗 Enlaces del proyecto
+## 🔗 Enlaces del proyecto
 
-- **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
-- **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat)
+- **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app?utm_source=chatgpt.com)
+- **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat?utm_source=chatgpt.com)
 
 ---
 
@@ -54,6 +54,8 @@ La aplicación también integra **Gemini** mediante una función backend ubicada
 - Protección del contenido renderizado mediante escape de HTML.
 - Pruebas automatizadas con Vitest.
 - Despliegue mediante Vercel.
+- Validación del funcionamiento de las rutas SPA en producción.
+- Recarga mediante `F5` de las rutas internas en producción.
 
 ## Rutas principales
 
@@ -80,9 +82,10 @@ También es posible:
 - visualizar el último mensaje registrado;
 - limpiar la conversación del personaje seleccionado;
 - conservar el historial al navegar entre las diferentes secciones;
-- restaurar correctamente el historial asociado al personaje seleccionado.
+- restaurar correctamente el historial asociado al personaje seleccionado;
+- conservar el historial después de recargar la aplicación en producción.
 
-La persistencia mediante recarga directa de las rutas en producción se comprobará durante la validación final del despliegue en Vercel.
+La persistencia y recuperación de las conversaciones fueron validadas tanto durante las pruebas locales como en el deployment de Vercel.
 
 ## Integración con Gemini
 
@@ -108,17 +111,17 @@ La función:
 - devuelve únicamente la respuesta generada al frontend;
 - maneja errores de la API.
 
-La clave de API no se almacena en el código frontend ni debe incluirse directamente en el repositorio.
+La clave de API no se almacena en el código frontend ni se incluye directamente en el repositorio.
 
 No se utiliza un SDK adicional de Google para la integración; se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
 
-La validación definitiva de la integración con Gemini en producción se realizará durante el despliegue final en Vercel.
+La integración con Gemini fue validada correctamente en el entorno de producción de Vercel.
 
 ## Testing
 
 El proyecto utiliza **Vitest** para las pruebas automatizadas.
 
-Estado actual:
+Estado final:
 
 - **2 archivos de pruebas**
 - **42 pruebas**
@@ -156,7 +159,11 @@ Además de las pruebas automatizadas, se realizó una validación manual de:
 - watermark;
 - indicador de escritura;
 - página About;
-- casos límite principales.
+- casos límite principales;
+- navegación Back/Forward;
+- recarga mediante `F5`;
+- funcionamiento de las rutas en producción;
+- integración con Gemini en Vercel.
 
 ## Tecnologías
 
@@ -174,7 +181,6 @@ El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su
 
 ```text
 Looney AI Chat/
-
 ├── api/
 │   └── functions.js
 ├── src/
@@ -216,8 +222,7 @@ Looney AI Chat/
 Clonar el repositorio y acceder al directorio del proyecto:
 
 ```bash
-git clone https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat.git
-
+git clone <repositorio-de-GitHub>
 cd Proyecto-M3_Looney_IA_chat
 ```
 
@@ -255,23 +260,27 @@ La clave real **no debe incluirse en el repositorio**.
 
 ## Despliegue
 
-El proyecto se encuentra preparado para su despliegue en **Vercel**.
+El proyecto se encuentra desplegado y validado en **Vercel**.
 
-Durante la validación final en producción se comprobarán:
+Durante la validación final en producción se comprobaron:
 
 - navegación entre Home, Chat y About;
 - conversaciones independientes por personaje;
 - generación de respuestas mediante Gemini;
 - persistencia del historial;
+- recuperación de conversaciones;
 - recarga directa de las rutas;
 - recarga mediante `F5`;
-- rutas con `character` mediante query string.
+- rutas con `character` mediante query string;
+- navegación mediante Back/Forward.
 
-La necesidad de utilizar reglas de rewrite para las rutas SPA se determinará durante esta validación.
+La aplicación funciona correctamente en producción.
 
-Por el momento **no se incorpora un archivo `vercel.json`**, ya que se acordó comprobar primero el comportamiento real de las rutas en Vercel.
+Durante la validación local con `npx vercel dev` se había observado que una recarga directa de determinadas rutas internas podía devolver `404`. Sin embargo, esta situación no se reproduce en el deployment final de Vercel.
 
-**Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
+Por lo tanto, **no fue necesario incorporar un archivo `vercel.json` ni reglas de rewrite adicionales**. La configuración actual de Vercel es suficiente para el funcionamiento del enrutamiento SPA.
+
+**Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app?utm_source=chatgpt.com)
 
 ## Documentación
 
@@ -295,22 +304,31 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [x] Revisión final del código
 - [x] Revisión de documentación
 - [x] Preparación para despliegue en Vercel
-- [ ] Validación definitiva de Gemini en producción
-- [ ] Validación de rutas SPA y recarga mediante `F5` en producción
-- [ ] Commit final
-- [ ] Push final
+- [x] Validación de Gemini en producción
+- [x] Validación de rutas SPA en producción
+- [x] Validación de recarga mediante `F5`
+- [x] Validación de persistencia en producción
+- [x] Commit final
+- [x] Push final
+- [x] Deployment final en Vercel
 
 ## Consideraciones de la validación local
 
-Durante la validación con `npx vercel dev`, la navegación interna de la SPA funciona correctamente.
+Durante la validación con `npx vercel dev`, la navegación interna de la SPA funcionó correctamente.
 
-Sin embargo, al realizar una recarga directa mediante `F5` sobre rutas como `/chat` o `/chat?character=...`, el entorno local puede responder con `404`.
+Inicialmente se observó que una recarga directa mediante `F5` sobre rutas como `/chat` o `/chat?character=...` podía responder con `404` en el entorno local.
 
-Esta situación corresponde al comportamiento observado en el entorno local de desarrollo de Vercel.
+Este comportamiento fue posteriormente contrastado con el deployment real en Vercel.
 
-La validación definitiva de este comportamiento se realizará directamente en producción, una vez realizado el despliegue.
+La validación en producción confirmó que:
 
-No se incorpora un `vercel.json` únicamente para resolver la diferencia del entorno local. Primero se comprobará si Vercel requiere una regla de rewrite para las rutas SPA.
+- las rutas internas cargan correctamente;
+- las rutas con `character` funcionan correctamente;
+- la recarga mediante `F5` funciona correctamente;
+- la navegación SPA continúa funcionando;
+- la persistencia de las conversaciones se mantiene correctamente.
+
+Por este motivo, no fue necesario agregar `vercel.json` ni otra configuración adicional para solucionar el comportamiento observado exclusivamente en el entorno local.
 
 ## Enfoque del proyecto
 
@@ -332,4 +350,4 @@ La integración con Gemini se implementó mediante una función backend sencilla
 
 Las imágenes de los personajes se mantienen como recursos locales dentro de `src/assets/characters/`, evitando dependencias externas para su presentación visual.
 
-El proyecto queda preparado para su presentación como una POC educativa, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y preparación para su despliegue en Vercel.
+El proyecto queda finalizado y preparado para su presentación como una **POC educativa**, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y deployment validado en Vercel.

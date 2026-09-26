@@ -96,7 +96,7 @@
 
 - También se verificó que el historial pudiera recuperarse después de navegar entre las diferentes vistas.
 
-- La validación específica de persistencia mediante recarga directa de rutas en producción queda incluida dentro de la comprobación final de Vercel.
+- La persistencia se validó después de realizar recargas en el deployment de producción.
 
 - Se decidió mantener el historial asociado al identificador del personaje, evitando que una conversación afecte a otra.
 
@@ -206,9 +206,9 @@
 
 - Se mantuvo [`.env.example`](.env.example) como referencia para indicar la variable requerida sin exponer la clave real.
 
-- La integración con Gemini quedó implementada y preparada para la validación funcional en el deployment final de Vercel.
+- La integración con Gemini fue validada correctamente en el deployment de producción de Vercel.
 
-- La comprobación de la comunicación real con Gemini en producción forma parte de la validación final del deployment y no se considera sustituida por las pruebas automatizadas.
+- Se comprobó la generación de respuestas mediante la integración real, complementando las pruebas automatizadas realizadas durante el desarrollo.
 
 ## 10. Revisión y corrección del código
 
@@ -234,11 +234,11 @@
 
 - Se decidió utilizar **Vercel** como plataforma de deployment del proyecto.
 
-- El deployment se preparó después de completar y validar las funcionalidades principales.
+- El deployment se realizó después de completar y validar las funcionalidades principales.
 
-- La aplicación cuenta con un deployment en Vercel para realizar la comprobación final de producción.
+- La aplicación cuenta con un deployment en Vercel utilizado para la validación final de producción.
 
-- La validación definitiva del deployment contempla comprobar:
+- La validación final del deployment comprobó:
   - navegación entre Home, Chat y About;
   - selección de personajes;
   - conversaciones independientes;
@@ -249,7 +249,9 @@
   - recarga mediante `F5`;
   - rutas con `character` mediante query string.
 
-- Se decidió mantener la configuración de deployment fuera del código de la aplicación cuando Vercel permita resolver el comportamiento directamente desde su configuración.
+- Todas las comprobaciones anteriores funcionaron correctamente en producción.
+
+- Se decidió mantener la configuración de deployment sencilla y evitar archivos de configuración adicionales cuando no fueran necesarios.
 
 ## 12. Manejo de rutas SPA en producción
 
@@ -257,9 +259,9 @@
 
 - Inicialmente se decidió no incorporar un `vercel.json` únicamente para resolver este comportamiento local, ya que la navegación interna de la SPA funcionaba correctamente.
 
-- Para la etapa de producción se contempla utilizar las herramientas de routing disponibles en Vercel para resolver las rutas SPA si la validación demuestra que son necesarias.
+- Se realizó posteriormente la comprobación directamente sobre el deployment real en Vercel.
 
-- La comprobación en Vercel deberá confirmar específicamente el comportamiento de:
+- La validación de producción confirmó correctamente el funcionamiento de:
 
   ```text
   /home
@@ -270,13 +272,17 @@
 
   tanto mediante navegación interna como mediante recarga directa.
 
-- Si las rutas funcionan correctamente en producción sin incorporar configuración adicional, se mantendrá la solución actual.
+- También se comprobó que la recarga mediante `F5` funciona correctamente sobre las rutas internas.
 
-- Si la recarga directa devuelve `404`, se incorporará únicamente la configuración mínima necesaria para resolver el comportamiento, evitando afectar la función backend ubicada en `/api`.
+- Las rutas que utilizan el parámetro `character` también se mantienen funcionales después de una recarga.
 
-- Se decidió no agregar un `vercel.json` de forma preventiva mientras no exista una necesidad comprobada en el deployment real.
+- Debido a que el deployment de Vercel resuelve correctamente el enrutamiento de la aplicación, **no fue necesario incorporar `vercel.json`**.
 
-- La diferencia observada entre el comportamiento local y el comportamiento esperado en producción se mantiene documentada como una consideración del entorno de desarrollo hasta completar esta comprobación.
+- Se decidió mantener el proyecto sin reglas de rewrite adicionales.
+
+- La diferencia observada inicialmente entre el entorno local y el deployment de producción queda documentada como una particularidad del entorno local de desarrollo de Vercel.
+
+- La configuración actual de Vercel es suficiente para el funcionamiento del enrutamiento SPA del proyecto.
 
 ## 13. Validación final
 
@@ -286,7 +292,7 @@
 
 - La validación automática final alcanzó **42 pruebas aprobadas**.
 
-- La validación manual realizada hasta el momento confirmó el funcionamiento de:
+- La validación manual confirmó el funcionamiento de:
   - navegación SPA;
   - selección de personajes;
   - conversaciones independientes;
@@ -299,21 +305,22 @@
   - navegación hacia atrás y adelante;
   - vista de conversaciones;
   - presentación visual de los personajes;
-  - página About.
-
-- La validación de producción pendiente comprende específicamente:
-  - integración real con Gemini en Vercel;
-  - persistencia después de recargar;
-  - recarga directa de rutas;
+  - página About;
   - recarga mediante `F5`;
-  - funcionamiento de las rutas con query string;
-  - comportamiento final del deployment.
+  - rutas directas en producción;
+  - integración real con Gemini en Vercel.
+
+- Se comprobó la persistencia del historial después de la navegación y de la recarga de la aplicación en producción.
+
+- Se verificó que las rutas con query string para seleccionar personajes continúan funcionando correctamente después de una recarga.
 
 - Se realizó además una revisión final del código para identificar errores, código heredado y posibles mejoras sin aumentar innecesariamente la complejidad.
 
-- Después de la revisión se confirmó que no era necesario incorporar nuevas dependencias ni nuevos archivos para completar el alcance definido hasta esta etapa.
+- Después de la revisión se confirmó que no era necesario incorporar nuevas dependencias ni nuevos archivos para completar el alcance definido.
 
 - No se incorporaron nuevas funcionalidades durante la última etapa; el objetivo fue estabilizar y validar el estado alcanzado antes del cierre y la documentación.
+
+- Con la validación de producción completada, el proyecto se considera técnicamente finalizado.
 
 ## 14. Alcance y complejidad
 
@@ -331,7 +338,9 @@
 
 - Se evitó agregar configuraciones adicionales mientras no fueran necesarias para resolver un problema comprobado en el deployment.
 
-- La estrategia de routing de producción se verificará antes de incorporar archivos adicionales como `vercel.json`.
+- La validación de producción confirmó que no era necesario incorporar `vercel.json`.
+
+- Se mantuvo la configuración proporcionada por Vercel para resolver el enrutamiento de la aplicación.
 
 ## 15. Principio general de las decisiones
 
@@ -341,18 +350,16 @@ Las decisiones del proyecto siguieron un criterio común:
 
 A medida que el proyecto evolucionó, las decisiones iniciales fueron revisadas cuando el estado real de la aplicación lo requirió.
 
-La integración con **Gemini**, la preparación del **deployment en Vercel**, las mejoras visuales y la protección del contenido renderizado se incorporaron únicamente después de validar que aportaban valor al funcionamiento final del POC.
+La integración con **Gemini**, las mejoras visuales, la protección del contenido renderizado y el deployment en **Vercel** se incorporaron únicamente después de validar que aportaban valor al funcionamiento final del POC.
 
-La solución de las rutas SPA en producción se mantiene como una comprobación específica de la etapa final de deployment, evitando incorporar configuración adicional antes de comprobar su necesidad real.
+La estrategia de routing de producción también fue validada directamente en Vercel. Debido a que las rutas SPA y la recarga mediante `F5` funcionan correctamente, no fue necesario incorporar configuración adicional mediante `vercel.json`.
 
-El resultado alcanzado es una aplicación educativa con una arquitectura sencilla, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, integración con inteligencia artificial y preparación para su validación final en Vercel.
+El resultado final es una aplicación educativa con una arquitectura sencilla, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, integración con inteligencia artificial y deployment validado en Vercel.
 
-### Enlaces relacionados
+## Enlaces relacionados
 
-- [`README.md`](README.md) — presentación, instalación, características y estado del proyecto.
-
+- [`README.md`](README.md) — presentación, instalación, características y estado final del proyecto.
 - [Demo en Vercel](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app)
-
 - [Repositorio en GitHub](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat)
 
 [⬆️ Volver al inicio](#inicio)
