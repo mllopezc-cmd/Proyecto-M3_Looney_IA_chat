@@ -4,7 +4,7 @@ Aplicación web educativa que presenta una experiencia de chat con personajes de
 
 ## 🔗 Enlaces del proyecto
 
-- **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app?utm_source=chatgpt.com)
+- **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat.vercel.app/)
 - **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat?utm_source=chatgpt.com)
 
 ---
