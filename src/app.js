@@ -76,6 +76,7 @@ function renderChatHome() {
     <main class="conversation-panel">
       <header class="conversation-header">
         <h1>Mis conversaciones</h1>
+
         <p>
           Continúa una conversación existente o inicia una nueva
           con uno de los personajes.
@@ -102,6 +103,7 @@ function renderChatHome() {
 
                 <div class="conversation-content">
                   <h3>${conversation.name}</h3>
+
                   <p class="conversation-personality">
                     ${conversation.personality}
                   </p>
@@ -172,6 +174,7 @@ function renderAbout() {
         <div class="about-features">
           <article class="about-feature">
             <h3>🤖 Inteligencia artificial</h3>
+
             <p>
               Genera respuestas para crear conversaciones
               dinámicas con los personajes.
@@ -180,6 +183,7 @@ function renderAbout() {
 
           <article class="about-feature">
             <h3>💬 Conversaciones</h3>
+
             <p>
               Cada personaje mantiene su propia conversación
               para que puedas retomarla posteriormente.
@@ -188,6 +192,7 @@ function renderAbout() {
 
           <article class="about-feature">
             <h3>🎭 Personajes</h3>
+
             <p>
               Personajes clásicos de Looney Tunes, conocidos por sus
               personalidades únicas, situaciones humorísticas y aventuras.
@@ -196,6 +201,7 @@ function renderAbout() {
 
           <article class="about-feature">
             <h3>📱 Experiencia responsive</h3>
+
             <p>
               La interfaz está adaptada para utilizarse
               cómodamente desde diferentes dispositivos.
@@ -248,37 +254,37 @@ function renderAbout() {
       </section>
 
       <section class="about-section credits-section">
-  <h2>Créditos</h2>
+        <h2>Créditos</h2>
 
-  <p>
-    Proyecto desarrollado por <strong>MAURICIO LOPEZ</strong>.
-  </p>
+        <p>
+          Proyecto desarrollado por <strong>MAURICIO LOPEZ</strong>.
+        </p>
 
-  <div class="credits-links">
-    <a
-      href="https://github.com/mllopezc-cmd"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      GitHub personal
-    </a>
+        <div class="credits-links">
+          <a
+            href="https://github.com/mllopezc-cmd"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub personal
+          </a>
 
-    <a
-      href="https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Repositorio del proyecto
-    </a>
-  </div>
+          <a
+            href="https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Repositorio del proyecto
+          </a>
+        </div>
 
-  <p class="credits-disclaimer">
-    Proyecto académico sin fines comerciales. Los personajes y el universo
-    de los Looney Tunes son propiedad de Warner Bros. Discovery y sus
-    respectivos titulares de derechos; este proyecto no está afiliado ni
-    respaldado por ellos.
-  </p>
-</section>
+        <p class="credits-disclaimer">
+          Proyecto académico sin fines comerciales. Los personajes y el universo
+          de los Looney Tunes son propiedad de Warner Bros. Discovery y sus
+          respectivos titulares de derechos; este proyecto no está afiliado ni
+          respaldado por ellos.
+        </p>
+      </section>
     </main>
   `;
 }
