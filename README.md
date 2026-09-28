@@ -280,7 +280,7 @@ Durante la validación local con `npx vercel dev` se había observado que una re
 
 Por lo tanto, **no fue necesario incorporar un archivo `vercel.json` ni reglas de rewrite adicionales**. La configuración actual de Vercel es suficiente para el funcionamiento del enrutamiento SPA.
 
-**Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat-ocned15iw-looney-ai-chat.vercel.app?utm_source=chatgpt.com)
+**Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat.vercel.app/)
 
 ## Documentación
 

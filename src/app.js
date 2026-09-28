@@ -246,6 +246,39 @@ function renderAbout() {
           HTML · CSS · JavaScript · Vitest · Vercel · localStorage
         </p>
       </section>
+
+      <section class="about-section credits-section">
+  <h2>Créditos</h2>
+
+  <p>
+    Proyecto desarrollado por <strong>MAURICIO LOPEZ</strong>.
+  </p>
+
+  <div class="credits-links">
+    <a
+      href="https://github.com/mllopezc-cmd"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      GitHub personal
+    </a>
+
+    <a
+      href="https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Repositorio del proyecto
+    </a>
+  </div>
+
+  <p class="credits-disclaimer">
+    Proyecto académico sin fines comerciales. Los personajes y el universo
+    de los Looney Tunes son propiedad de Warner Bros. Discovery y sus
+    respectivos titulares de derechos; este proyecto no está afiliado ni
+    respaldado por ellos.
+  </p>
+</section>
     </main>
   `;
 }
