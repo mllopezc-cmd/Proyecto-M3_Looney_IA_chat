@@ -5,7 +5,7 @@ Aplicación web educativa que presenta una experiencia de chat con personajes de
 ## 🔗 Enlaces del proyecto
 
 - **Demo en Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat.vercel.app/)
-- **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat?utm_source=chatgpt.com)
+- **Repositorio en GitHub:** [Proyecto-M3_Looney_IA_chat](https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat)
 
 ---
 
@@ -33,7 +33,15 @@ La aplicación también integra **Gemini** mediante una función backend ubicada
 
 - Navegación entre las secciones **Home**, **Chat** y **About**.
 - Navegación SPA mediante History API.
+- Menú de navegación desplegable mediante icono de tres líneas.
+- Cierre automático del menú después de seleccionar una sección.
+- Cierre del menú al hacer clic fuera de él.
+- Estados ARIA para mejorar la accesibilidad del menú.
+- Modo claro y modo oscuro integrado dentro del menú de navegación.
+- Persistencia de la preferencia de tema mediante `localStorage`.
 - Selección de personajes desde Home.
+- Tarjetas de personajes completamente seleccionables.
+- Navegación directa desde cada tarjeta hacia el chat del personaje.
 - URLs independientes para cada conversación.
 - Historial independiente para cada personaje.
 - Persistencia de conversaciones mediante `localStorage`.
@@ -46,16 +54,19 @@ La aplicación también integra **Gemini** mediante una función backend ubicada
 - Manejo de personajes no encontrados.
 - Validación de mensajes vacíos o con espacios.
 - Indicador visual de escritura durante la generación de respuestas.
+- Animación del indicador de escritura mediante `Escribiendo.`, `Escribiendo..` y `Escribiendo...`.
+- Bloqueo de nuevos envíos mientras se procesa una respuesta.
+- Bloqueo temporal de la acción de limpiar el historial durante el procesamiento.
+- Restauración de los controles después de una respuesta exitosa o fallida.
+- Mensaje de error amigable cuando la comunicación con la API falla.
 - Watermark visual asociado al personaje seleccionado.
 - Manejo de errores de la API.
+- Validación del historial enviado al backend.
 - Integración con Gemini mediante `fetch`.
-- Modo claro y modo oscuro con persistencia de la preferencia.
 - Diseño responsive para dispositivos móviles, tablets y escritorio.
 - Protección del contenido renderizado mediante escape de HTML.
 - Pruebas automatizadas con Vitest.
 - Despliegue mediante Vercel.
-- Validación del funcionamiento de las rutas SPA en producción.
-- Recarga mediante `F5` de las rutas internas en producción.
 
 ## Rutas principales
 
@@ -83,9 +94,9 @@ También es posible:
 - limpiar la conversación del personaje seleccionado;
 - conservar el historial al navegar entre las diferentes secciones;
 - restaurar correctamente el historial asociado al personaje seleccionado;
-- conservar el historial después de recargar la aplicación en producción.
+- conservar el historial después de recargar la aplicación.
 
-La persistencia y recuperación de las conversaciones fueron validadas tanto durante las pruebas locales como en el deployment de Vercel.
+La aplicación valida la estructura básica del historial recuperado para evitar que datos inválidos almacenados en `localStorage` provoquen errores durante el funcionamiento.
 
 ## Integración con Gemini
 
@@ -103,29 +114,36 @@ La función:
 
 - valida el método HTTP;
 - valida el personaje solicitado;
-- valida que exista contenido en la conversación;
+- valida que el historial sea un arreglo con mensajes válidos;
+- valida que cada mensaje tenga un remitente permitido;
+- valida que los mensajes contengan texto;
 - obtiene `GEMINI_API_KEY` desde las variables de entorno;
 - construye las instrucciones del personaje;
 - envía la conversación a Gemini;
 - procesa la respuesta;
-- devuelve únicamente la respuesta generada al frontend;
+- devuelve la respuesta generada al frontend;
 - maneja errores de la API.
 
 La clave de API no se almacena en el código frontend ni se incluye directamente en el repositorio.
 
 No se utiliza un SDK adicional de Google para la integración; se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
 
-La integración con Gemini fue validada correctamente en el entorno de producción de Vercel.
-
 ## Testing
 
 El proyecto utiliza **Vitest** para las pruebas automatizadas.
 
-Estado final:
+### Estado final
 
 - **2 archivos de pruebas**
-- **42 pruebas**
-- **42 pruebas aprobadas**
+- **53 pruebas**
+- **53 pruebas aprobadas**
+- **0 pruebas fallidas**
+- **0 errores no controlados**
+
+Los archivos de pruebas son:
+
+- `tests/app.test.js`
+- `tests/utils.test.js`
 
 Las pruebas cubren principalmente:
 
@@ -142,28 +160,51 @@ Las pruebas cubren principalmente:
 - navegación SPA;
 - funciones utilitarias;
 - escape de contenido HTML;
-- manejo de respuestas de API;
-- comportamiento después de un envío vacío.
+- comportamiento del menú de navegación;
+- estados ARIA del menú;
+- cierre del menú durante la navegación;
+- tarjetas de personajes completamente seleccionables;
+- indicador de carga;
+- bloqueo de nuevos envíos durante el procesamiento;
+- restauración de controles después de una respuesta;
+- manejo de errores durante la comunicación con la API.
+
+El comando utilizado para la validación final es:
+
+```bash
+npm test
+```
+
+Resultado final validado:
+
+```text
+✓ tests/utils.test.js (8 tests)
+✓ tests/app.test.js (45 tests)
+
+Test Files  2 passed (2)
+Tests       53 passed (53)
+```
 
 Además de las pruebas automatizadas, se realizó una validación manual de:
 
 - navegación entre las rutas;
 - selección de personajes;
+- tarjetas completamente seleccionables;
 - conversaciones independientes;
 - recuperación del historial;
 - limpieza de conversaciones;
 - diseño responsive;
 - modo claro y oscuro;
 - menú de navegación;
+- estados del menú;
 - perfil de los personajes;
 - watermark;
 - indicador de escritura;
 - página About;
 - casos límite principales;
 - navegación Back/Forward;
-- recarga mediante `F5`;
-- funcionamiento de las rutas en producción;
-- integración con Gemini en Vercel.
+- comportamiento del chat durante el procesamiento;
+- manejo visual de errores.
 
 ## Tecnologías
 
@@ -209,10 +250,10 @@ Looney AI Chat/
 
 - `src/app.js`: navegación SPA, renderizado de Home, About, panel de conversaciones y elementos generales de la aplicación.
 - `src/chat.js`: lógica de personajes, conversaciones, persistencia y comunicación con la API.
-- `src/utils.js`: funciones utilitarias y escape de contenido HTML.
-- `src/styles.css`: estilos, modo claro/oscuro y diseño responsive.
+- `src/utils.js`: funciones utilitarias, comunicación HTTP y escape de contenido HTML.
+- `src/styles.css`: estilos, modo claro/oscuro, estados visuales y diseño responsive.
 - `src/index.html`: estructura HTML inicial de la aplicación.
-- `api/functions.js`: integración backend con Gemini.
+- `api/functions.js`: integración backend con Gemini y validación de las solicitudes.
 - `tests/app.test.js`: pruebas de aplicación, navegación y chat.
 - `tests/utils.test.js`: pruebas de funciones utilitarias.
 - `src/assets/characters/`: imágenes locales utilizadas para representar a los personajes.
@@ -223,6 +264,7 @@ Clonar el repositorio y acceder al directorio del proyecto:
 
 ```bash
 git clone <repositorio-de-GitHub>
+
 cd Proyecto-M3_Looney_IA_chat
 ```
 
@@ -260,25 +302,24 @@ La clave real **no debe incluirse en el repositorio**.
 
 ## Despliegue
 
-El proyecto se encuentra desplegado y validado en **Vercel**.
+El proyecto se encuentra desplegado en **Vercel**.
 
-Durante la validación final en producción se comprobaron:
+Durante la validación del deployment se revisaron los principales flujos de la aplicación, incluyendo:
 
 - navegación entre Home, Chat y About;
-- conversaciones independientes por personaje;
-- generación de respuestas mediante Gemini;
+- selección de personajes;
+- conversaciones independientes;
 - persistencia del historial;
 - recuperación de conversaciones;
-- recarga directa de las rutas;
-- recarga mediante `F5`;
 - rutas con `character` mediante query string;
-- navegación mediante Back/Forward.
+- navegación mediante Back/Forward;
+- funcionamiento de la aplicación desplegada.
 
-La aplicación funciona correctamente en producción.
+Durante la validación local con `npx vercel dev` se observó que una recarga directa de determinadas rutas internas podía devolver `404`.
 
-Durante la validación local con `npx vercel dev` se había observado que una recarga directa de determinadas rutas internas podía devolver `404`. Sin embargo, esta situación no se reproduce en el deployment final de Vercel.
+Este comportamiento se contrastó posteriormente con el deployment de Vercel. La aplicación desplegada funciona correctamente mediante su navegación SPA y las rutas internas utilizadas por el proyecto.
 
-Por lo tanto, **no fue necesario incorporar un archivo `vercel.json` ni reglas de rewrite adicionales**. La configuración actual de Vercel es suficiente para el funcionamiento del enrutamiento SPA.
+Por este motivo, no fue necesario incorporar un archivo `vercel.json` ni reglas de rewrite adicionales.
 
 **Vercel:** [Looney AI Chat](https://proyecto-m3-looney-ia-chat.vercel.app/)
 
@@ -297,6 +338,12 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [x] Persistencia de conversaciones
 - [x] Separación de historiales por personaje
 - [x] Mejoras visuales y responsive
+- [x] Menú de navegación desplegable
+- [x] Modo claro y oscuro
+- [x] Tarjetas de personajes completamente seleccionables
+- [x] Indicador de escritura
+- [x] Bloqueo durante el procesamiento de mensajes
+- [x] Manejo de errores de la comunicación con la API
 - [x] Implementación de pruebas automatizadas
 - [x] Integración con Gemini
 - [x] Validación automática
@@ -304,13 +351,9 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [x] Revisión final del código
 - [x] Revisión de documentación
 - [x] Preparación para despliegue en Vercel
-- [x] Validación de Gemini en producción
-- [x] Validación de rutas SPA en producción
-- [x] Validación de recarga mediante `F5`
-- [x] Validación de persistencia en producción
-- [x] Commit final
-- [x] Push final
-- [x] Deployment final en Vercel
+- [x] Validación del deployment
+- [x] Commit final del código
+- [x] Push final del código
 
 ## Consideraciones de la validación local
 
@@ -318,17 +361,11 @@ Durante la validación con `npx vercel dev`, la navegación interna de la SPA fu
 
 Inicialmente se observó que una recarga directa mediante `F5` sobre rutas como `/chat` o `/chat?character=...` podía responder con `404` en el entorno local.
 
-Este comportamiento fue posteriormente contrastado con el deployment real en Vercel.
+Este comportamiento fue contrastado con el deployment de Vercel.
 
-La validación en producción confirmó que:
+La aplicación desplegada funciona correctamente mediante la navegación interna de la SPA y las rutas utilizadas por el proyecto.
 
-- las rutas internas cargan correctamente;
-- las rutas con `character` funcionan correctamente;
-- la recarga mediante `F5` funciona correctamente;
-- la navegación SPA continúa funcionando;
-- la persistencia de las conversaciones se mantiene correctamente.
-
-Por este motivo, no fue necesario agregar `vercel.json` ni otra configuración adicional para solucionar el comportamiento observado exclusivamente en el entorno local.
+Por este motivo, no fue necesario agregar `vercel.json` ni otra configuración adicional para solucionar el comportamiento observado exclusivamente durante la ejecución local de `vercel dev`.
 
 ## Enfoque del proyecto
 
@@ -350,4 +387,4 @@ La integración con Gemini se implementó mediante una función backend sencilla
 
 Las imágenes de los personajes se mantienen como recursos locales dentro de `src/assets/characters/`, evitando dependencias externas para su presentación visual.
 
-El proyecto queda finalizado y preparado para su presentación como una **POC educativa**, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y deployment validado en Vercel.
+El proyecto queda finalizado como una **POC educativa**, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y deployment en Vercel.
