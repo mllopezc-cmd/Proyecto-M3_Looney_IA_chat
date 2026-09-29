@@ -4,7 +4,9 @@
 
 ## 1. Enfoque del proyecto
 
-- Se decidió mantener **Looney AI Chat como un POC educativo**, priorizando la comprensión del código, la separación de responsabilidades y la facilidad de revisión por encima de una arquitectura orientada a producción.
+- Se decidió mantener **Looney AI Chat como una POC (Proof of Concept) independiente de desarrollo de software**, priorizando la comprensión del código, la separación de responsabilidades, la mantenibilidad y una evolución controlada de la solución.
+
+- Aunque el proyecto se desarrolló inicialmente dentro de un contexto académico, su estructura se planteó como una **base tecnológica funcional susceptible de futuras iteraciones y una eventual evolución hacia un producto**.
 
 - Se adoptó un desarrollo progresivo, siguiendo el flujo:
 
@@ -12,19 +14,19 @@
 
 - Las mejoras se incorporaron de forma incremental y fueron verificadas antes de continuar con la siguiente etapa.
 
-- Se evitó agregar funcionalidades que no fueran necesarias para cumplir el objetivo del proyecto.
+- Se evitó agregar funcionalidades que no fueran necesarias para cumplir el alcance definido de la POC.
 
 - Se priorizaron cambios pequeños y controlados para reducir el riesgo de introducir regresiones.
 
-- Se decidió mantener una cantidad reducida de dependencias y evitar herramientas o abstracciones que no aportaran un beneficio claro al alcance del POC.
+- Se decidió mantener una cantidad reducida de dependencias y evitar herramientas o abstracciones que no aportaran un beneficio claro al alcance actual.
 
 - Se priorizó que cada mejora tuviera una justificación funcional, visual o de calidad del código antes de incorporarla.
 
 ## 2. Arquitectura y estructura
 
-- Se decidió mantener una **arquitectura sencilla**, evitando patrones, capas o abstracciones que no aportaran valor al POC.
+- Se decidió mantener una **arquitectura sencilla y proporcional al alcance de la POC**, evitando patrones, capas o abstracciones que no aportaran valor funcional o de mantenimiento.
 
-- Se priorizó una estructura de archivos fácil de localizar y comprender.
+- Se priorizó una estructura de archivos fácil de localizar, comprender y modificar.
 
 - Se evitó crear archivos auxiliares o configuraciones adicionales cuando podían resolverse de manera simple dentro de la estructura existente.
 
@@ -36,11 +38,13 @@
 
 - El proyecto utiliza **ES Modules**, manteniendo `"type": "module"` en `package.json`, debido a que este sistema de módulos es compatible con la estructura actual.
 
-- Se evitó incorporar dependencias adicionales únicamente para resolver problemas particulares que no aportaran valor funcional al POC.
+- Se evitó incorporar dependencias adicionales únicamente para resolver problemas particulares que no aportaran valor funcional al alcance del proyecto.
 
 - La integración con Gemini se implementó mediante `fetch`, sin incorporar un SDK adicional de Google.
 
 - Se mantuvo una arquitectura basada en HTML, CSS y JavaScript, sin incorporar un framework frontend.
+
+- La simplicidad arquitectónica se considera una decisión de diseño orientada a facilitar el mantenimiento y permitir futuras iteraciones sin introducir complejidad prematura.
 
 ## 3. Navegación y SPA
 
@@ -57,7 +61,7 @@
 
 - No se incorporó un sistema de routing externo porque la cantidad de vistas existentes no lo requiere.
 
-- Se mantuvo una solución deliberadamente sencilla y acorde con el carácter educativo del proyecto.
+- Se mantuvo una solución deliberadamente sencilla y proporcional al alcance actual del proyecto.
 
 - Durante las mejoras de navegación se mantuvieron los controles de historial del navegador, permitiendo utilizar correctamente **Back** y **Forward**.
 
@@ -120,7 +124,7 @@
 
 - Se decidió utilizar **Vitest** como herramienta de pruebas del proyecto.
 
-- No se instaló `jsdom`, ya que incorporar una nueva dependencia únicamente para proporcionar un entorno DOM completo no aportaba suficiente valor para el POC.
+- No se instaló `jsdom`, ya que incorporar una nueva dependencia únicamente para proporcionar un entorno DOM completo no aportaba suficiente valor para el alcance actual.
 
 - Se utilizaron mocks controlados para representar las partes del navegador necesarias durante las pruebas.
 
@@ -246,7 +250,7 @@
 
 - Inicialmente se decidió mantener Gemini para una etapa posterior, mientras se completaban y validaban las funcionalidades frontend.
 
-- Una vez estabilizadas la navegación, el chat, la persistencia y las pruebas, se decidió incorporar la integración con Gemini como parte de la versión funcional final del POC.
+- Una vez estabilizadas la navegación, el chat, la persistencia y las pruebas, se decidió incorporar la integración con Gemini como parte de la versión funcional de la POC.
 
 - La integración se implementó mediante la función backend ubicada en `api/functions.js`.
 
@@ -270,9 +274,9 @@
 
 - La integración utiliza el modelo configurado en `api/functions.js`, manteniendo la configuración centralizada en el backend.
 
-- La integración con Gemini fue validada en el deployment de producción de Vercel.
+- La integración con Gemini fue validada durante las pruebas de integración realizadas en el deployment de Vercel.
 
-- Se comprobó la generación de respuestas mediante la integración real, complementando las pruebas automatizadas realizadas durante el desarrollo.
+- La arquitectura mantiene la integración con el proveedor desacoplada del frontend, permitiendo modificar posteriormente la estrategia de integración sin alterar la estructura principal de la interfaz.
 
 ## 10. Revisión y corrección del código
 
@@ -302,20 +306,20 @@
 
 - El deployment se realizó después de completar y validar las funcionalidades principales.
 
-- La aplicación cuenta con un deployment en Vercel utilizado para la validación final de producción.
+- La aplicación cuenta con un deployment en Vercel utilizado para la validación de los principales flujos en producción.
 
-- La validación final del deployment comprobó:
+- La validación del deployment comprobó:
   - navegación entre Home, Chat y About;
   - selección de personajes;
   - conversaciones independientes;
-  - generación de respuestas mediante Gemini;
+  - integración con Gemini;
   - persistencia del historial;
   - navegación Back/Forward;
   - recarga directa de las rutas;
   - recarga mediante `F5`;
   - rutas con `character` mediante query string.
 
-- Las comprobaciones anteriores fueron validadas en producción.
+- Las comprobaciones anteriores fueron realizadas sobre el deployment de producción disponible durante la etapa de validación.
 
 - Se decidió mantener la configuración de deployment sencilla y evitar archivos de configuración adicionales cuando no fueran necesarios.
 
@@ -331,8 +335,11 @@
 
   ```text
   /home
+
   /chat
+
   /chat?character=bugs
+
   /about
   ```
 
@@ -389,7 +396,7 @@
   - página About;
   - recarga mediante `F5`;
   - rutas directas en producción;
-  - integración real con Gemini en Vercel.
+  - integración con Gemini durante la etapa de validación.
 
 - Se comprobó la persistencia del historial después de la navegación y de la recarga de la aplicación en producción.
 
@@ -403,13 +410,13 @@
 
 - El estado final del código fue publicado en el repositorio mediante el commit correspondiente a las mejoras finales de UX/UI y chat.
 
-- Con la validación automática y manual completadas, el código del proyecto se considera técnicamente finalizado.
+- Con la validación automática y manual completadas, el código del proyecto se consideró técnicamente finalizado.
 
 ## 14. Alcance y complejidad
 
 - Se decidió **no resolver mediante complejidad adicional las particularidades internas de los tests** cuando estas no representaban un problema real del funcionamiento de la aplicación.
 
-- Se priorizó mantener el código comprensible para un proyecto educativo antes que optimizarlo para escenarios que actualmente no forman parte de su alcance.
+- Se priorizó mantener el código comprensible y mantenible antes que optimizarlo para escenarios que actualmente no forman parte de su alcance.
 
 - Se evitó incorporar funcionalidades futuras de manera anticipada.
 
@@ -427,23 +434,27 @@
 
 - Las mejoras visuales se implementaron mediante CSS y JavaScript existentes, evitando incorporar librerías de componentes, frameworks CSS o soluciones externas.
 
-- Se mantuvo el proyecto dentro de un nivel de complejidad coherente con su finalidad educativa.
+- Se mantuvo un nivel de complejidad coherente con el alcance de una POC, dejando al mismo tiempo una base organizada para futuras iteraciones.
+
+- Se priorizó que la solución pudiera evolucionar sin introducir prematuramente una arquitectura más compleja de la que requieren sus funcionalidades actuales.
 
 ## 15. Principio general de las decisiones
 
 Las decisiones del proyecto siguieron un criterio común:
 
-> **Mantener la solución lo más sencilla posible, incorporando únicamente la complejidad necesaria para cumplir el objetivo del POC y poder probar, comprender y mantener el código con facilidad.**
+> **Mantener la solución lo más sencilla posible, incorporando únicamente la complejidad necesaria para cumplir el objetivo de la POC y poder probar, comprender, mantener y evolucionar el código con facilidad.**
 
 A medida que el proyecto evolucionó, las decisiones iniciales fueron revisadas cuando el estado real de la aplicación lo requirió.
 
-La integración con **Gemini**, las mejoras visuales, la protección del contenido renderizado, la navegación SPA, el menú hamburguesa, el modo claro/oscuro y el deployment en **Vercel** se incorporaron únicamente después de validar que aportaban valor al funcionamiento final del POC.
+La integración con **Gemini**, las mejoras visuales, la protección del contenido renderizado, la navegación SPA, el menú hamburguesa, el modo claro/oscuro y el deployment en **Vercel** se incorporaron únicamente después de validar que aportaban valor al funcionamiento final de la solución.
 
 Las mejoras de UX/UI se realizaron sin modificar innecesariamente la arquitectura general. Se priorizó que las nuevas interacciones, como el menú, las tarjetas clicables, el indicador de escritura y el bloqueo temporal del formulario, se integraran sobre la estructura existente.
 
 La estrategia de routing de producción también fue validada directamente en Vercel. Debido a que las rutas SPA y la recarga mediante `F5` funcionan correctamente en producción, no fue necesario incorporar configuración adicional mediante `vercel.json`.
 
-El resultado final es una aplicación educativa con una arquitectura sencilla, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, protección del contenido renderizado, manejo de estados y errores, integración con inteligencia artificial y deployment validado en Vercel.
+El resultado final es una **POC independiente de desarrollo de software**, con navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, protección del contenido renderizado, manejo de estados y errores, integración con inteligencia artificial y deployment en Vercel.
+
+Su estructura permite utilizarla como **base tecnológica para futuras iteraciones y una eventual evolución hacia un producto**, manteniendo una arquitectura proporcional al alcance actual y evitando complejidad prematura.
 
 ## Enlaces relacionados
 

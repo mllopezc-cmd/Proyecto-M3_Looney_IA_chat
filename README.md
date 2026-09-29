@@ -1,6 +1,6 @@
 # Looney AI Chat
 
-Aplicación web educativa que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial.
+Aplicación web independiente que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial, desarrollada como una POC con estructura y fundamentos de software orientados a su posible evolución como producto.
 
 ## 🔗 Enlaces del proyecto
 
@@ -9,7 +9,7 @@ Aplicación web educativa que presenta una experiencia de chat con personajes de
 
 ---
 
-El proyecto fue desarrollado como una **POC (Proof of Concept) educativa**, con una arquitectura sencilla y enfocada en practicar conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, persistencia local, integración con una API externa, pruebas automatizadas y despliegue en Vercel.
+El proyecto fue desarrollado como una **POC (Proof of Concept)**, con una arquitectura sencilla y enfocada en demostrar una experiencia de producto funcional mediante conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, persistencia local, integración con una API externa, pruebas automatizadas y despliegue en Vercel.
 
 ## Presentación
 
@@ -27,7 +27,7 @@ Las conversaciones se almacenan en `localStorage`, permitiendo conservar el hist
 
 La aplicación también integra **Gemini** mediante una función backend ubicada en `api/functions.js`. La clave de API se mantiene como variable de entorno y no se expone directamente en el frontend.
 
-> **Nota:** El proyecto es una POC educativa y no pretende reproducir oficialmente a los personajes ni construir una arquitectura de producción compleja.
+> **Nota:** El proyecto es una POC independiente orientada a demostrar una experiencia de software funcional y una base tecnológica susceptible de evolución. No pretende reproducir oficialmente a los personajes ni representa una arquitectura de producción definitiva.
 
 ## Características actuales
 
@@ -216,12 +216,13 @@ Además de las pruebas automatizadas, se realizó una validación manual de:
 - `localStorage`
 - Gemini API mediante `fetch`
 
-El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su comprensión y presentación como POC educativa.
+El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su comprensión, mantenimiento y evolución como base de software.
 
 ## Estructura principal
 
 ```text
 Looney AI Chat/
+
 ├── api/
 │   └── functions.js
 ├── src/
@@ -369,7 +370,7 @@ Por este motivo, no fue necesario agregar `vercel.json` ni otra configuración a
 
 ## Enfoque del proyecto
 
-El objetivo del proyecto no es construir una arquitectura compleja, sino desarrollar una aplicación funcional, comprensible y fácil de presentar.
+El objetivo del proyecto es desarrollar una aplicación funcional, comprensible y mantenible, utilizando una arquitectura proporcional al alcance de la POC y dejando una base preparada para futuras iteraciones.
 
 Por esta razón se priorizaron:
 
@@ -387,4 +388,4 @@ La integración con Gemini se implementó mediante una función backend sencilla
 
 Las imágenes de los personajes se mantienen como recursos locales dentro de `src/assets/characters/`, evitando dependencias externas para su presentación visual.
 
-El proyecto queda finalizado como una **POC educativa**, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y deployment en Vercel.
+El proyecto queda finalizado como una **POC independiente de desarrollo de software**, con frontend, persistencia local, pruebas automatizadas, integración con inteligencia artificial y deployment en Vercel. Su estructura permite utilizarlo como base para futuras iteraciones y una eventual evolución hacia un producto.

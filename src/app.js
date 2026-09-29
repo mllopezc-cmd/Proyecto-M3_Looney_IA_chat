@@ -280,10 +280,10 @@ function renderAbout() {
         </div>
 
         <p class="credits-disclaimer">
-          Proyecto académico sin fines comerciales. Los personajes y el universo
-          de los Looney Tunes son propiedad de Warner Bros. Discovery y sus
-          respectivos titulares de derechos; este proyecto no está afiliado ni
-          respaldado por ellos.
+          Proyecto independiente de desarrollo de software orientado a la exploración de experiencias conversacionales 
+          con inteligencia artificial, concebido como una base tecnológica con potencial de evolución comercial. 
+          Looney Tunes y sus personajes son propiedad de Warner Bros. Discovery y/o de sus respectivos titulares de derechos. 
+          Este proyecto es independiente y no está afiliado, patrocinado, autorizado ni respaldado por Warner Bros. Discovery.
         </p>
       </section>
     </main>
