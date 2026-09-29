@@ -86,9 +86,20 @@ export default async function handler(request, response) {
     });
   }
 
-  if (!Array.isArray(history) || history.length === 0) {
+  const isValidHistory =
+    Array.isArray(history) &&
+    history.length > 0 &&
+    history.every(
+      (message) =>
+        message &&
+        (message.sender === "user" || message.sender === "character") &&
+        typeof message.text === "string" &&
+        message.text.trim().length > 0,
+    );
+
+  if (!isValidHistory) {
     return response.status(400).json({
-      error: "El historial de conversación es obligatorio.",
+      error: "El historial de conversación no es válido.",
     });
   }
 

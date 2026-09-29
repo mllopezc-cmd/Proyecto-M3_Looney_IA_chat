@@ -1,13 +1,11 @@
 {
   "name": "proyecto-m3_looney_ia_chat",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "POC educativo de una aplicación web de chat con personajes de Looney Tunes mediante inteligencia artificial.",
   "scripts": {
     "test": "vitest run"
   },
-  "keywords": [],
-  "author": "",
+  "author": "MAURICIO LOPEZ",
   "license": "ISC",
   "type": "module",
   "devDependencies": {

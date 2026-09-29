@@ -1,4 +1,4 @@
-import { createMessage, escapeHTML } from "./utils.js";
+import { createMessage, escapeHTML, fetchData } from "./utils.js";
 
 const characters = {
   bugs: {
@@ -60,7 +60,12 @@ function loadConversations() {
       return {};
     }
 
-    return parsedHistory;
+    return Object.fromEntries(
+      Object.entries(parsedHistory).map(([characterId, conversation]) => [
+        characterId,
+        Array.isArray(conversation) ? conversation : [],
+      ]),
+    );
   } catch {
     return {};
   }
@@ -151,6 +156,7 @@ async function handleSubmit(
   characterId,
   messagesContainer,
   loadingState,
+  clearHistoryButton,
 ) {
   event.preventDefault();
 
@@ -166,6 +172,7 @@ async function handleSubmit(
   }
 
   loadingState.isLoading = true;
+  clearHistoryButton.disabled = true;
 
   addMessage(characterId, "user", text);
 
@@ -175,25 +182,23 @@ async function handleSubmit(
 
   input.disabled = true;
 
-  messagesContainer.innerHTML += `
-  <article
-    class="message message-loading"
-    id="message-loading"
-    aria-live="polite"
-  >
-    <p>Escribiendo.</p>
-  </article>
-`;
+  const loadingMessage = document.createElement("article");
+  loadingMessage.className = "message message-loading";
+  loadingMessage.id = "message-loading";
+  loadingMessage.setAttribute("aria-live", "polite");
+
+  const loadingText = document.createElement("p");
+  loadingText.textContent = "Escribiendo.";
+  loadingMessage.appendChild(loadingText);
+
+  messagesContainer.appendChild(loadingMessage);
 
   let dots = 1;
 
   const typingInterval = setInterval(() => {
     dots = dots === 3 ? 1 : dots + 1;
 
-    messagesContainer.innerHTML = messagesContainer.innerHTML.replace(
-      /Escribiendo\.{1,3}/,
-      `Escribiendo${".".repeat(dots)}`,
-    );
+    loadingText.textContent = `Escribiendo${".".repeat(dots)}`;
   }, 500);
 
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -201,7 +206,7 @@ async function handleSubmit(
   try {
     const conversation = getConversation(characterId);
 
-    const response = await fetch("/api/functions.js", {
+    const data = await fetchData("/api/functions.js", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -212,16 +217,10 @@ async function handleSubmit(
       }),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "No se pudo obtener una respuesta.");
-    }
-
     addMessage(characterId, "character", data.reply);
 
     renderMessages(characterId, messagesContainer);
-  } catch (error) {
+  } catch {
     messagesContainer.innerHTML += `
     <article class="message message-error" aria-live="polite">
       <p>Lo siento, no pude responder en este momento. Inténtalo nuevamente.</p>
@@ -231,18 +230,12 @@ async function handleSubmit(
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   } finally {
     clearInterval(typingInterval);
-
-    messagesContainer.innerHTML = messagesContainer.innerHTML.replace(
-      /<article[^>]*id="message-loading"[^>]*>[\s\S]*?<\/article>/,
-      "",
-    );
-
-    input.disabled = false;
-
-    if (typeof input.focus === "function") {
-      input.focus();
+    if (loadingMessage && typeof loadingMessage.remove === "function") {
+      loadingMessage.remove();
     }
-
+    input.disabled = false;
+    clearHistoryButton.disabled = false;
+    if (typeof input.focus === "function") input.focus();
     loadingState.isLoading = false;
   }
 }
@@ -325,14 +318,20 @@ export function renderChat(characterId, app) {
   renderMessages(characterId, messagesContainer);
 
   form.addEventListener("submit", (event) => {
-    handleSubmit(event, characterId, messagesContainer, loadingState);
+    handleSubmit(
+      event,
+      characterId,
+      messagesContainer,
+      loadingState,
+      clearHistoryButton,
+    );
   });
 
   clearHistoryButton.addEventListener("click", () => {
+    if (loadingState.isLoading) return;
+
     clearConversation(characterId);
-
     addMessage(characterId, "character", character.greeting);
-
     renderMessages(characterId, messagesContainer);
   });
 }

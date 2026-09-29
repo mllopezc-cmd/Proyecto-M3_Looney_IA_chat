@@ -31,7 +31,12 @@ function renderHome() {
               const characterImage = characterImages[characterId];
 
               return `
-                <article class="character-card">
+                <a
+                  class="character-card"
+                  href="/chat?character=${characterId}"
+                  data-character="${characterId}"
+                  aria-label="Chatear con ${character.name}"
+                >
                   <div class="character-image-wrapper">
                     <img
                       class="character-image"
@@ -51,15 +56,11 @@ function renderHome() {
                       ${character.description}
                     </p>
 
-                    <a
-                      class="character-link"
-                      href="/chat?character=${characterId}"
-                      data-character="${characterId}"
-                    >
+                    <span class="character-link">
                       Chatear con ${character.name}
-                    </a>
+                    </span>
                   </div>
-                </article>
+                </a>
               `;
             })
             .join("")}
@@ -305,27 +306,9 @@ function getRoute(pathname) {
   return "home";
 }
 
-function updateNavigation(route) {
-  const currentRoute = document.querySelector("#current-route");
-
-  if (!currentRoute) {
-    return;
-  }
-
-  const labels = {
-    home: "Home",
-    chat: "Chat",
-    about: "About",
-  };
-
-  currentRoute.textContent = labels[route] || "Home";
-}
-
 function router() {
   const path = window.location.pathname;
   const route = getRoute(path);
-
-  updateNavigation(route);
 
   if (route === "chat") {
     const params = new URLSearchParams(window.location.search);
@@ -349,12 +332,12 @@ function router() {
 }
 
 document.addEventListener("click", (event) => {
-  const characterButton = event.target.closest("[data-character]");
+  const characterLink = event.target.closest("[data-character]");
 
-  if (characterButton) {
+  if (characterLink) {
     event.preventDefault();
 
-    const characterId = characterButton.dataset.character;
+    const characterId = characterLink.dataset.character;
 
     window.history.pushState({}, "", `/chat?character=${characterId}`);
 
@@ -364,45 +347,72 @@ document.addEventListener("click", (event) => {
 
   const link = event.target.closest("[data-route]");
 
-  if (!link) {
+  if (link) {
+    event.preventDefault();
+
+    const route = link.dataset.route;
+    window.history.pushState({}, "", route);
+
+    const navigation = link.closest(".main-nav");
+
+    if (navigation) {
+      navigation.removeAttribute("open");
+    }
+
+    router();
     return;
   }
 
-  event.preventDefault();
-
-  const route = link.dataset.route;
-
-  window.history.pushState({}, "", route);
-
-  const navigation = link.closest(".main-nav");
-
-  if (navigation) {
-    navigation.removeAttribute("open");
+  if (mainNav?.open && !event.target.closest(".main-nav")) {
+    mainNav.removeAttribute("open");
   }
-
-  router();
 });
 
 window.addEventListener("popstate", router);
+
+const mainNav = document.querySelector(".main-nav");
+
+if (mainNav) {
+  const menuButton = mainNav.querySelector("summary");
+
+  mainNav.addEventListener("toggle", () => {
+    const isOpen = mainNav.open;
+
+    menuButton.setAttribute("aria-expanded", String(isOpen));
+    menuButton.setAttribute(
+      "aria-label",
+      isOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación",
+    );
+  });
+}
 
 const themeToggle = document.querySelector("#theme-toggle");
 const savedTheme = localStorage.getItem("looney-theme");
 
 if (themeToggle) {
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-mode");
-    themeToggle.textContent = "☀️";
-    themeToggle.setAttribute("aria-label", "Activar modo claro");
-  }
+  const themeIcon = themeToggle.querySelector(".theme-icon");
+  const themeLabel = themeToggle.querySelector(".theme-label");
 
-  themeToggle.addEventListener("click", () => {
-    const isDarkMode = document.body.classList.toggle("dark-mode");
+  const updateThemeButton = (isDarkMode) => {
+    themeIcon.textContent = isDarkMode ? "☀️" : "🌙";
+    themeLabel.textContent = isDarkMode ? "Modo claro" : "Modo oscuro";
 
-    themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
     themeToggle.setAttribute(
       "aria-label",
       isDarkMode ? "Activar modo claro" : "Activar modo oscuro",
     );
+  };
+
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+  }
+
+  updateThemeButton(document.body.classList.contains("dark-mode"));
+
+  themeToggle.addEventListener("click", () => {
+    const isDarkMode = document.body.classList.toggle("dark-mode");
+
+    updateThemeButton(isDarkMode);
 
     localStorage.setItem("looney-theme", isDarkMode ? "dark" : "light");
   });

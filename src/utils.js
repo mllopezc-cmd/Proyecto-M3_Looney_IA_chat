@@ -22,7 +22,14 @@ export async function fetchData(url, options = {}) {
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    throw new Error(`Error en la petición: ${response.status}`);
+    let errorMessage = `Error en la petición: ${response.status}`;
+
+    if (typeof response.json === "function") {
+      const data = await response.json();
+      errorMessage = data.error || errorMessage;
+    }
+
+    throw new Error(errorMessage);
   }
 
   return response.json();

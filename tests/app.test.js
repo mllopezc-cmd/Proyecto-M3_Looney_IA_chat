@@ -24,6 +24,8 @@ const messagesContainer = {
   innerHTML: "",
   scrollTop: 0,
   scrollHeight: 100,
+
+  appendChild: vi.fn(),
 };
 
 const input = {
@@ -77,14 +79,71 @@ const appElement = {
 let documentClickHandler = null;
 let popstateHandler = null;
 
+const navigationSummary = {
+  setAttribute: vi.fn(),
+};
+
+const navigationMenu = {
+  open: false,
+
+  querySelector: vi.fn((selector) => {
+    if (selector === "summary") {
+      return navigationSummary;
+    }
+
+    return null;
+  }),
+
+  addEventListener: vi.fn((event, callback) => {
+    if (event === "toggle") {
+      navigationMenu.toggleHandler = callback;
+    }
+  }),
+
+  removeAttribute: vi.fn((attribute) => {
+    if (attribute === "open") {
+      navigationMenu.open = false;
+    }
+  }),
+
+  toggleHandler: null,
+};
+
+const createElementMock = (tagName) => {
+  const element = {
+    tagName: tagName.toUpperCase(),
+    className: "",
+    id: "",
+    textContent: "",
+    disabled: false,
+    children: [],
+
+    setAttribute: vi.fn(),
+
+    appendChild: vi.fn((child) => {
+      element.children.push(child);
+    }),
+
+    remove: vi.fn(),
+  };
+
+  return element;
+};
+
 const documentMock = {
   querySelector: vi.fn((selector) => {
     if (selector === "#app") {
       return appElement;
     }
 
+    if (selector === ".main-nav") {
+      return navigationMenu;
+    }
+
     return null;
   }),
+
+  createElement: vi.fn((tagName) => createElementMock(tagName)),
 
   addEventListener: vi.fn((event, callback) => {
     if (event === "click") {
@@ -134,11 +193,14 @@ beforeEach(() => {
 
   messagesContainer.innerHTML = "";
   messagesContainer.scrollTop = 0;
+  messagesContainer.appendChild.mockClear();
 
   input.value = "";
 
   form.submitHandler = null;
   clearHistoryButton.clickHandler = null;
+
+  navigationMenu.open = false;
 
   windowMock.location.pathname = "/";
   windowMock.location.search = "";
@@ -239,6 +301,137 @@ describe("Chat", () => {
 
     expect(messagesContainer.innerHTML).toContain("Hola Bugs");
     expect(messagesContainer.innerHTML).toContain("message-user");
+  });
+
+  test("muestra el indicador de carga mientras procesa el mensaje", () => {
+    renderChat("bugs", appElement);
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(document.createElement).toHaveBeenCalledWith("article");
+    expect(document.createElement).toHaveBeenCalledWith("p");
+
+    expect(messagesContainer.appendChild).toHaveBeenCalled();
+
+    const loadingMessage = messagesContainer.appendChild.mock.calls
+      .map(([element]) => element)
+      .find((element) => element.className === "message message-loading");
+
+    expect(loadingMessage).toBeDefined();
+    expect(loadingMessage.id).toBe("message-loading");
+    expect(loadingMessage.setAttribute).toHaveBeenCalledWith(
+      "aria-live",
+      "polite",
+    );
+  });
+
+  test("bloquea nuevos envíos mientras procesa el mensaje", () => {
+    renderChat("bugs", appElement);
+
+    input.value = "Primer mensaje";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(input.disabled).toBe(true);
+    expect(clearHistoryButton.disabled).toBe(true);
+
+    const htmlAfterFirstSubmit = messagesContainer.innerHTML;
+
+    input.value = "Segundo mensaje";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(messagesContainer.innerHTML).toBe(htmlAfterFirstSubmit);
+    expect(messagesContainer.innerHTML).not.toContain("Segundo mensaje");
+  });
+
+  test("restablece los controles y elimina el indicador al finalizar la respuesta", async () => {
+    renderChat("bugs", appElement);
+
+    let resolveFetch;
+
+    globalThis.fetch = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(input.disabled).toBe(true);
+    expect(clearHistoryButton.disabled).toBe(true);
+
+    const loadingMessage = messagesContainer.appendChild.mock.calls
+      .map(([element]) => element)
+      .find((element) => element.className === "message message-loading");
+
+    expect(loadingMessage).toBeDefined();
+
+    resolveFetch({
+      ok: true,
+      json: async () => ({
+        reply: "Respuesta de Bugs",
+      }),
+    });
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain("Respuesta de Bugs");
+    expect(loadingMessage.textContent).not.toBe("Escribiendo.");
+  });
+
+  test("muestra un mensaje de error y restablece los controles cuando falla la respuesta", async () => {
+    renderChat("bugs", appElement);
+
+    let rejectFetch;
+
+    globalThis.fetch = vi.fn(
+      () =>
+        new Promise((_, reject) => {
+          rejectFetch = reject;
+        }),
+    );
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(input.disabled).toBe(true);
+    expect(clearHistoryButton.disabled).toBe(true);
+
+    rejectFetch(new Error("Error de conexión"));
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain(
+      "Lo siento, no pude responder en este momento. Inténtalo nuevamente.",
+    );
   });
 
   test("ignora un mensaje vacío", () => {
@@ -471,6 +664,36 @@ describe("Chat", () => {
   });
 });
 
+describe("Tarjetas de personajes en Home", () => {
+  test("renderiza cada tarjeta como un enlace hacia el chat correspondiente", () => {
+    windowMock.location.pathname = "/home";
+    windowMock.location.search = "";
+
+    popstateHandler();
+
+    expect(appElement.innerHTML).toContain('class="character-card"');
+
+    expect(appElement.innerHTML).toContain('href="/chat?character=bugs"');
+
+    expect(appElement.innerHTML).toContain('href="/chat?character=silvestre"');
+
+    expect(appElement.innerHTML).toContain('href="/chat?character=lucas"');
+  });
+
+  test("mantiene la acción de chat como contenido visual dentro de la tarjeta", () => {
+    windowMock.location.pathname = "/home";
+    windowMock.location.search = "";
+
+    popstateHandler();
+
+    expect(appElement.innerHTML).toContain("Chatear con Bugs Bunny");
+
+    expect(appElement.innerHTML).toContain("Chatear con Silvestre");
+
+    expect(appElement.innerHTML).toContain("Chatear con Pato Lucas");
+  });
+});
+
 describe("Integración Home → Chat", () => {
   test("selecciona un personaje desde Home y navega a su chat", () => {
     const characterButton = {
@@ -606,6 +829,86 @@ describe("Panel de conversaciones", () => {
 });
 
 describe("Navegación SPA", () => {
+  test("dispone del handler toggle del menú principal", () => {
+    expect(navigationMenu.toggleHandler).toEqual(expect.any(Function));
+  });
+
+  test("actualiza el estado ARIA cuando el menú está cerrado", () => {
+    navigationMenu.open = false;
+
+    navigationMenu.toggleHandler();
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-expanded",
+      "false",
+    );
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-label",
+      "Abrir menú de navegación",
+    );
+  });
+
+  test("actualiza el estado ARIA cuando el menú está abierto", () => {
+    navigationMenu.open = true;
+
+    navigationMenu.toggleHandler();
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-expanded",
+      "true",
+    );
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-label",
+      "Cerrar menú de navegación",
+    );
+  });
+
+  test("restablece el estado ARIA cuando el menú vuelve a cerrarse", () => {
+    navigationMenu.open = true;
+    navigationMenu.toggleHandler();
+
+    navigationMenu.open = false;
+    navigationMenu.toggleHandler();
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-expanded",
+      "false",
+    );
+
+    expect(navigationSummary.setAttribute).toHaveBeenCalledWith(
+      "aria-label",
+      "Abrir menú de navegación",
+    );
+  });
+
+  test("cierra el menú al navegar mediante un enlace data-route", () => {
+    navigationMenu.open = true;
+
+    const preventDefault = vi.fn();
+
+    const link = {
+      dataset: { route: "/about" },
+
+      closest: vi.fn((selector) => {
+        if (selector === "[data-character]") return null;
+        if (selector === "[data-route]") return link;
+        if (selector === ".main-nav") return navigationMenu;
+        return null;
+      }),
+    };
+
+    documentClickHandler({
+      target: link,
+      preventDefault,
+    });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(navigationMenu.removeAttribute).toHaveBeenCalledWith("open");
+    expect(windowMock.history.pushState).toHaveBeenCalledWith({}, "", "/about");
+  });
+
   test("navega mediante un enlace data-route usando pushState", () => {
     const preventDefault = vi.fn();
 
