@@ -574,7 +574,10 @@ El proyecto se considera cerrado en términos de:
 - revisión de código;
 - integración con Gemini;
 - deployment;
-- documentación.
+- documentación;
+- evidencia audiovisual de la interacción con IA.
+
+La documentación final incluye un GIF de demostración de la interacción con Bugs Bunny, donde se evidencia el envío de un mensaje, el estado de carga y la respuesta generada por la IA. El archivo se encuentra en `docs/screenshots/chat-bugs-bunny.gif` y está referenciado desde el `README.md`.
 
 No quedan decisiones técnicas pendientes para completar el alcance actual de la POC.
 

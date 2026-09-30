@@ -49,6 +49,10 @@ La implementación utiliza estos personajes como parte del contexto de una POC d
 
 ![Chat en escritorio](docs/screenshots/chat-desktop.png)
 
+### Chat — interacción con Bugs Bunny
+
+![Interacción con Bugs Bunny](docs/screenshots/chat-bugs-bunny.gif)
+
 ### Home — vista móvil
 
 ![Home en dispositivo móvil](docs/screenshots/home-mobile.png)
