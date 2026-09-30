@@ -53,6 +53,8 @@ La implementación utiliza estos personajes como parte del contexto de una POC d
 
 ![Interacción con Bugs Bunny](docs/screenshots/chat-bugs-bunny.gif)
 
+La demostración muestra el envío de un mensaje, el indicador de escritura y la respuesta generada mediante la integración con IA.
+
 ### Home — vista móvil
 
 ![Home en dispositivo móvil](docs/screenshots/home-mobile.png)
@@ -314,13 +316,20 @@ El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su
 Looney AI Chat/
 ├── api/
 │   └── functions.js
+├── docs/
+│   └── screenshots/
+│       ├── home-desktop.png
+│       ├── home-mobile.png
+│       ├── home-dark.png
+│       ├── chat-desktop.png
+│       └── chat-bugs-bunny.gif
 ├── src/
-│   ├── app.js
 │   ├── assets/
 │   │   └── characters/
 │   │       ├── bugs-bunny.webp
 │   │       ├── silvestre.webp
 │   │       └── pato-lucas.webp
+│   ├── app.js
 │   ├── chat.js
 │   ├── index.html
 │   ├── styles.css
@@ -336,6 +345,20 @@ Looney AI Chat/
 ├── README.md
 └── decisiones.md
 ```
+
+### Responsabilidad de los principales archivos
+
+- `src/app.js`: navegación SPA, renderizado de Home, About, panel de conversaciones y elementos generales de la aplicación.
+- `src/chat.js`: lógica de personajes, conversaciones, persistencia, validaciones y comunicación con la API.
+- `src/utils.js`: funciones utilitarias, comunicación HTTP y escape de contenido HTML.
+- `src/styles.css`: estilos, modo claro/oscuro, estados visuales y diseño responsive.
+- `src/index.html`: estructura HTML inicial de la aplicación.
+- `api/functions.js`: integración backend con Gemini y validación de las solicitudes.
+- `tests/app.test.js`: pruebas de aplicación, navegación y chat.
+- `tests/utils.test.js`: pruebas de funciones utilitarias.
+- `tests/api.test.js`: pruebas del endpoint backend, validaciones de entrada, límites del historial y manejo de respuestas de Gemini.
+- `src/assets/characters/`: imágenes locales utilizadas para representar a los personajes.
+- `docs/screenshots/`: capturas y evidencia audiovisual utilizadas para documentar visualmente la aplicación.
 
 ### Responsabilidad de los principales archivos
 

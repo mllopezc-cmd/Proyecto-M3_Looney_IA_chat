@@ -562,7 +562,7 @@ Su estructura permite utilizarla como **base tecnológica para futuras iteracion
 
 ## Estado final de las decisiones
 
-Las decisiones técnicas y de alcance documentadas en este archivo corresponden al **estado final validado del proyecto**.
+Las decisiones técnicas, funcionales y de alcance documentadas en este archivo corresponden al **estado final validado del proyecto**.
 
 El proyecto se considera cerrado en términos de:
 
@@ -575,9 +575,27 @@ El proyecto se considera cerrado en términos de:
 - integración con Gemini;
 - deployment;
 - documentación;
-- evidencia audiovisual de la interacción con IA.
+- evidencia visual y audiovisual.
 
-La documentación final incluye un GIF de demostración de la interacción con Bugs Bunny, donde se evidencia el envío de un mensaje, el estado de carga y la respuesta generada por la IA. El archivo se encuentra en `docs/screenshots/chat-bugs-bunny.gif` y está referenciado desde el `README.md`.
+Como parte de la documentación final se incorporaron capturas de pantalla y un GIF de demostración de la interacción con Bugs Bunny. La evidencia audiovisual muestra el flujo de envío de un mensaje, el indicador de escritura y la respuesta generada mediante la integración con IA.
+
+Los archivos de evidencia se encuentran en:
+
+```text
+docs/screenshots/
+```
+
+La demostración principal de interacción con IA se encuentra en:
+
+```text
+docs/screenshots/chat-bugs-bunny.gif
+```
+
+El GIF está referenciado desde la sección **Capturas de pantalla** del `README.md`.
+
+La incorporación de esta evidencia no representa una nueva funcionalidad ni un cambio arquitectónico. Su objetivo es documentar visualmente una funcionalidad ya implementada y validada.
+
+La documentación final se mantiene alineada con el estado del código, las pruebas automatizadas, la validación manual, el deployment y el contenido publicado en el repositorio.
 
 No quedan decisiones técnicas pendientes para completar el alcance actual de la POC.
 
