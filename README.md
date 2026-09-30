@@ -29,6 +29,24 @@ La aplicación también integra **Gemini** mediante una función backend ubicada
 
 > **Nota:** El proyecto es una POC independiente orientada a demostrar una experiencia de software funcional y una base tecnológica susceptible de evolución. No pretende reproducir oficialmente a los personajes ni representa una arquitectura de producción definitiva.
 
+## Capturas de pantalla
+
+### Home — escritorio
+
+![Home en escritorio](docs/screenshots/home-desktop.png)
+
+### Chat — escritorio
+
+![Chat en escritorio](docs/screenshots/chat-desktop.png)
+
+### Home — vista móvil
+
+![Home en dispositivo móvil](docs/screenshots/home-mobile.png)
+
+### Home — modo oscuro
+
+![Home en modo oscuro](docs/screenshots/home-dark.png)
+
 ## Características actuales
 
 - Navegación entre las secciones **Home**, **Chat** y **About**.
