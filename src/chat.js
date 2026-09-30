@@ -29,6 +29,9 @@ const characters = {
 };
 
 const STORAGE_KEY = "looney-chat-history";
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_HISTORY_MESSAGES = 20;
+const MAX_HISTORY_CHARACTERS = 12000;
 
 const characterImages = {
   bugs: "./assets/characters/bugs-bunny.webp",
@@ -77,6 +80,38 @@ function saveConversations() {
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+}
+
+function getHistoryForAPI(conversation) {
+  const limitedHistory = [];
+  let totalCharacters = 0;
+
+  for (let index = conversation.length - 1; index >= 0; index -= 1) {
+    const message = conversation[index];
+
+    if (
+      !message ||
+      (message.sender !== "user" && message.sender !== "character") ||
+      typeof message.text !== "string" ||
+      !message.text.trim()
+    ) {
+      continue;
+    }
+
+    const messageLength = message.text.length;
+
+    if (
+      limitedHistory.length >= MAX_HISTORY_MESSAGES ||
+      totalCharacters + messageLength > MAX_HISTORY_CHARACTERS
+    ) {
+      break;
+    }
+
+    limitedHistory.unshift(message);
+    totalCharacters += messageLength;
+  }
+
+  return limitedHistory;
 }
 
 export function getCharacter(characterId) {
@@ -171,6 +206,13 @@ async function handleSubmit(
     return;
   }
 
+  if (text.length > MAX_MESSAGE_LENGTH) {
+    if (typeof input.focus === "function") {
+      input.focus();
+    }
+    return;
+  }
+
   loadingState.isLoading = true;
   clearHistoryButton.disabled = true;
 
@@ -205,6 +247,7 @@ async function handleSubmit(
 
   try {
     const conversation = getConversation(characterId);
+    const historyForAPI = getHistoryForAPI(conversation);
 
     const data = await fetchData("/api/functions.js", {
       method: "POST",
@@ -213,19 +256,35 @@ async function handleSubmit(
       },
       body: JSON.stringify({
         characterId,
-        history: conversation,
+        history: historyForAPI,
       }),
     });
 
     addMessage(characterId, "character", data.reply);
 
     renderMessages(characterId, messagesContainer);
-  } catch {
+  } catch (error) {
+    console.error("Error al procesar el mensaje:", error);
+
+    let errorMessage =
+      "Ocurrió un problema al procesar tu mensaje. Inténtalo nuevamente.";
+
+    if (error?.status === 429) {
+      errorMessage =
+        "El servicio de IA alcanzó temporalmente su límite de uso. Inténtalo nuevamente más tarde.";
+    } else if (error?.status === 500 || error?.status === 502) {
+      errorMessage =
+        "El servicio de IA no está disponible en este momento. Inténtalo nuevamente.";
+    } else if (!error?.status) {
+      errorMessage =
+        "No se pudo conectar con el servicio. Revisa tu conexión e inténtalo nuevamente.";
+    }
+
     messagesContainer.innerHTML += `
-    <article class="message message-error" aria-live="polite">
-      <p>Lo siento, no pude responder en este momento. Inténtalo nuevamente.</p>
-    </article>
-  `;
+      <article class="message message-error" aria-live="polite">
+        <p>${errorMessage}</p>
+      </article>
+    `;
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   } finally {
@@ -318,7 +377,7 @@ export function renderChat(characterId, app) {
   renderMessages(characterId, messagesContainer);
 
   form.addEventListener("submit", (event) => {
-    handleSubmit(
+    return handleSubmit(
       event,
       characterId,
       messagesContainer,

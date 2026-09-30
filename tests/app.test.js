@@ -205,6 +205,13 @@ beforeEach(() => {
   windowMock.location.pathname = "/";
   windowMock.location.search = "";
 
+  globalThis.fetch = vi.fn(async () => ({
+    ok: true,
+    json: async () => ({
+      reply: "Respuesta de prueba",
+    }),
+  }));
+
   vi.clearAllMocks();
 });
 
@@ -400,7 +407,7 @@ describe("Chat", () => {
     expect(loadingMessage.textContent).not.toBe("Escribiendo.");
   });
 
-  test("muestra un mensaje de error y restablece los controles cuando falla la respuesta", async () => {
+  test("muestra un mensaje de error de red y restablece los controles", async () => {
     renderChat("bugs", appElement);
 
     let rejectFetch;
@@ -430,7 +437,130 @@ describe("Chat", () => {
     });
 
     expect(messagesContainer.innerHTML).toContain(
-      "Lo siento, no pude responder en este momento. Inténtalo nuevamente.",
+      "No se pudo conectar con el servicio. Revisa tu conexión e inténtalo nuevamente.",
+    );
+  });
+
+  test("muestra un mensaje específico cuando el servicio responde HTTP 429", async () => {
+    renderChat("bugs", appElement);
+
+    globalThis.fetch = vi.fn(async () => ({
+      ok: false,
+      status: 429,
+      json: async () => ({
+        error: "RESOURCE_EXHAUSTED: quota exceeded",
+      }),
+    }));
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain(
+      "El servicio de IA alcanzó temporalmente su límite de uso. Inténtalo nuevamente más tarde.",
+    );
+
+    expect(messagesContainer.innerHTML).not.toContain("RESOURCE_EXHAUSTED");
+    expect(messagesContainer.innerHTML).not.toContain("quota exceeded");
+  });
+
+  test("muestra un mensaje específico cuando el servicio responde HTTP 500", async () => {
+    renderChat("bugs", appElement);
+
+    globalThis.fetch = vi.fn(async () => ({
+      ok: false,
+      status: 500,
+      json: async () => ({
+        error: "Internal Server Error",
+      }),
+    }));
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain(
+      "El servicio de IA no está disponible en este momento. Inténtalo nuevamente.",
+    );
+
+    expect(messagesContainer.innerHTML).not.toContain("Internal Server Error");
+  });
+
+  test("muestra un mensaje específico cuando el servicio responde HTTP 502", async () => {
+    renderChat("bugs", appElement);
+
+    globalThis.fetch = vi.fn(async () => ({
+      ok: false,
+      status: 502,
+      json: async () => ({
+        error: "Bad Gateway",
+      }),
+    }));
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain(
+      "El servicio de IA no está disponible en este momento. Inténtalo nuevamente.",
+    );
+
+    expect(messagesContainer.innerHTML).not.toContain("Bad Gateway");
+  });
+
+  test("muestra un mensaje genérico cuando ocurre otro error HTTP", async () => {
+    renderChat("bugs", appElement);
+
+    globalThis.fetch = vi.fn(async () => ({
+      ok: false,
+      status: 403,
+      json: async () => ({
+        error: "Forbidden: internal service details",
+      }),
+    }));
+
+    input.value = "Hola Bugs";
+
+    form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    await vi.waitFor(() => {
+      expect(input.disabled).toBe(false);
+      expect(clearHistoryButton.disabled).toBe(false);
+    });
+
+    expect(messagesContainer.innerHTML).toContain(
+      "Ocurrió un problema al procesar tu mensaje. Inténtalo nuevamente.",
+    );
+
+    expect(messagesContainer.innerHTML).not.toContain(
+      "Forbidden: internal service details",
     );
   });
 
@@ -484,6 +614,104 @@ describe("Chat", () => {
     });
 
     expect(messagesContainer.innerHTML).toContain("Mensaje después del vacío");
+  });
+
+  test("rechaza mensajes que superan el límite de 2000 caracteres", async () => {
+    renderChat("bugs", appElement);
+
+    input.value = "a".repeat(2001);
+
+    await form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(fetch).not.toHaveBeenCalled();
+    expect(input.value).toBe("a".repeat(2001));
+  });
+
+  test("acepta mensajes de exactamente 2000 caracteres", async () => {
+    renderChat("bugs", appElement);
+
+    input.value = "a".repeat(2000);
+
+    await form.submitHandler({
+      preventDefault: vi.fn(),
+      target: form,
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    const requestBody = JSON.parse(fetch.mock.calls[0][1].body);
+
+    expect(requestBody.history.at(-1)).toEqual({
+      sender: "user",
+      text: "a".repeat(2000),
+    });
+  });
+
+  test("envía como máximo 20 mensajes al contexto de la API", async () => {
+    renderChat("bugs", appElement);
+
+    for (let index = 1; index <= 25; index += 1) {
+      input.value = `Mensaje ${index}`;
+
+      await form.submitHandler({
+        preventDefault: vi.fn(),
+        target: form,
+      });
+    }
+
+    const lastRequest = fetch.mock.calls.at(-1);
+    const requestBody = JSON.parse(lastRequest[1].body);
+
+    expect(requestBody.history).toHaveLength(20);
+    expect(requestBody.history.at(-1).text).toBe("Mensaje 25");
+  });
+
+  test("limita el contexto enviado a 12000 caracteres", async () => {
+    renderChat("bugs", appElement);
+
+    for (let index = 1; index <= 8; index += 1) {
+      input.value = `${index}-${"a".repeat(1800)}`;
+
+      await form.submitHandler({
+        preventDefault: vi.fn(),
+        target: form,
+      });
+    }
+
+    const lastRequest = fetch.mock.calls.at(-1);
+    const requestBody = JSON.parse(lastRequest[1].body);
+
+    const totalCharacters = requestBody.history.reduce(
+      (total, message) => total + message.text.length,
+      0,
+    );
+
+    expect(totalCharacters).toBeLessThanOrEqual(12000);
+    expect(requestBody.history.at(-1).text).toContain("8-");
+  });
+
+  test("conserva el historial completo en localStorage aunque limite el contexto enviado", async () => {
+    renderChat("bugs", appElement);
+
+    clearHistoryButton.clickHandler();
+
+    for (let index = 1; index <= 25; index += 1) {
+      input.value = `Mensaje ${index}`;
+
+      await form.submitHandler({
+        preventDefault: vi.fn(),
+        target: form,
+      });
+    }
+
+    const storedHistory = JSON.parse(
+      localStorage.getItem("looney-chat-history"),
+    );
+
+    expect(storedHistory.bugs).toHaveLength(51);
   });
 
   test("renderChat muestra un mensaje cuando el personaje no existe", () => {

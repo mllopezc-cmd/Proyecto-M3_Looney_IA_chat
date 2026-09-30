@@ -10,7 +10,7 @@
 
 - Se adoptó un desarrollo progresivo, siguiendo el flujo:
 
-  **Desarrollo → Testing → Correcciones → Mejoras → Testing final → Commit/Push → Documentación → Commit/Push de documentación**
+  **Desarrollo → Testing → Correcciones → Mejoras → Testing final → Revisión final → Documentación → Commit/Push**
 
 - Las mejoras se incorporaron de forma incremental y fueron verificadas antes de continuar con la siguiente etapa.
 
@@ -21,6 +21,8 @@
 - Se decidió mantener una cantidad reducida de dependencias y evitar herramientas o abstracciones que no aportaran un beneficio claro al alcance actual.
 
 - Se priorizó que cada mejora tuviera una justificación funcional, visual o de calidad del código antes de incorporarla.
+
+---
 
 ## 2. Arquitectura y estructura
 
@@ -46,6 +48,8 @@
 
 - La simplicidad arquitectónica se considera una decisión de diseño orientada a facilitar el mantenimiento y permitir futuras iteraciones sin introducir complejidad prematura.
 
+---
+
 ## 3. Navegación y SPA
 
 - Se decidió utilizar una navegación tipo **SPA**, sin incorporar un framework adicional.
@@ -68,6 +72,8 @@
 - Se centralizó la gestión de la navegación en el router existente para evitar lógica duplicada.
 
 - Se mantuvo el comportamiento de la aplicación como SPA sin necesidad de introducir una dependencia específica para routing.
+
+---
 
 ## 4. Identificación de personajes
 
@@ -94,6 +100,8 @@
 
 - Se mantuvieron imágenes locales específicas para cada personaje, evitando depender de recursos externos para la presentación principal.
 
+---
+
 ## 5. Chat e historial
 
 - Se decidió mantener un **historial independiente por personaje**, evitando mezclar las conversaciones.
@@ -108,7 +116,7 @@
 
 - Se verificó que las conversaciones permanecieran separadas al cambiar entre Bugs Bunny, Silvestre y Pato Lucas.
 
-- También se verificó que el historial pudiera recuperarse después de navegar entre las diferentes vistas.
+- También se verificó que el historial pudiera recuperarse después de navegar entre las diferentes vistas y después de recargar la aplicación.
 
 - Se decidió mantener el historial asociado al identificador del personaje, evitando que una conversación afecte a otra.
 
@@ -119,6 +127,10 @@
   - **Continuar conversación**, cuando existe una conversación previa.
 
 - Cuando existe historial se muestra una vista previa de la última interacción disponible.
+
+- Se decidió mantener el historial completo almacenado localmente aunque el contexto enviado al backend pueda ser limitado por las restricciones de la API. De esta manera, las restricciones de tamaño no provocan la pérdida del historial visible para el usuario.
+
+---
 
 ## 6. Testing
 
@@ -141,7 +153,7 @@
   - manejo de errores;
   - interacción entre las diferentes vistas.
 
-- Se incorporaron pruebas para verificar que un mensaje vacío o compuesto únicamente por espacios no fuera enviado.
+- Se probaron casos relacionados con mensajes vacíos o compuestos únicamente por espacios.
 
 - Se identificó y corrigió un problema en el estado de carga de `chat.js`: el estado `isLoading` se establecía antes de validar el contenido del mensaje, lo que podía dejar bloqueado el chat después de un envío vacío.
 
@@ -153,18 +165,37 @@
 
 - Se incorporaron pruebas para verificar que los controles de la interfaz se deshabilitaran durante el procesamiento y fueran restaurados al finalizar la operación.
 
-- Se incorporó una prueba para verificar el comportamiento cuando la petición a la API falla, comprobando que se muestre un mensaje de error y que la interfaz vuelva a quedar disponible.
+- Se incorporaron pruebas para verificar el comportamiento ante diferentes tipos de error durante la comunicación con la API.
+
+- Se incorporaron pruebas específicas para el endpoint backend mediante `tests/api.test.js`.
+
+- Las pruebas del backend verifican:
+  - método HTTP permitido;
+  - personajes válidos;
+  - estructura del historial;
+  - remitentes válidos;
+  - límite de caracteres por mensaje;
+  - límite de cantidad de mensajes;
+  - límite total de caracteres;
+  - respuestas de error de Gemini;
+  - respuestas exitosas simuladas.
+
+- Durante las pruebas de API no se realizan solicitudes reales a Gemini. Las respuestas del servicio externo se simulan mediante mocks.
 
 - La validación automática final alcanzó:
 
   ```text
-  Test Files  2 passed
-  Tests       53 passed
+  Test Files  3 passed (3)
+  Tests       72 passed (72)
   ```
 
-- El resultado final fue **53 pruebas aprobadas de 53**, sin errores no controlados ni advertencias durante la ejecución final.
+- El resultado final fue **72 pruebas aprobadas de 72**, sin pruebas fallidas ni errores no controlados.
+
+- Los mensajes mostrados en `stderr` durante determinadas pruebas corresponden a escenarios de error simulados deliberadamente y registrados mediante `console.error`; no representan errores no controlados de Vitest.
 
 - También se realizó una **validación manual en el navegador** para comprobar comportamientos visuales y de interacción que no resultaba necesario cubrir completamente mediante pruebas automatizadas.
+
+---
 
 ## 7. Mejoras visuales y de interacción
 
@@ -214,7 +245,7 @@
 
 - Al finalizar correctamente la respuesta, los controles se restauran y el campo de entrada vuelve a quedar disponible.
 
-- En caso de error, los controles también se restauran y se muestra un mensaje amigable al usuario.
+- En caso de error, los controles también se restauran y se muestra un mensaje controlado al usuario.
 
 - Se incorporó un modo claro y oscuro con persistencia de la preferencia mediante `localStorage`.
 
@@ -232,6 +263,8 @@
 
 - Se mantuvo el criterio de realizar cambios visuales controlados sin incorporar frameworks o dependencias adicionales.
 
+---
+
 ## 8. Protección del contenido renderizado
 
 - Durante la revisión del código se identificó que los mensajes de usuario y las respuestas de la API podían terminar renderizándose mediante `innerHTML`.
@@ -245,6 +278,8 @@
 - Se agregaron pruebas automatizadas para verificar el escape de contenido HTML.
 
 - La decisión permitió mantener el uso existente de `innerHTML` sin tener que modificar innecesariamente toda la estrategia de renderizado del proyecto.
+
+---
 
 ## 9. Integración con Gemini
 
@@ -260,13 +295,15 @@
   - validar el método HTTP;
   - validar el personaje solicitado;
   - validar el contenido de la conversación;
+  - validar la estructura de los mensajes;
+  - validar los límites de las solicitudes;
   - obtener `GEMINI_API_KEY` desde las variables de entorno;
   - construir las instrucciones correspondientes al personaje;
   - transformar el historial al formato esperado por Gemini;
   - enviar la conversación a Gemini;
   - procesar la respuesta;
   - devolver la respuesta generada al frontend;
-  - manejar errores de la API.
+  - manejar errores del servicio.
 
 - Se decidió mantener la clave de API fuera del frontend y del repositorio mediante variables de entorno.
 
@@ -274,11 +311,72 @@
 
 - La integración utiliza el modelo configurado en `api/functions.js`, manteniendo la configuración centralizada en el backend.
 
-- La integración con Gemini fue validada durante las pruebas de integración realizadas en el deployment de Vercel.
+- La integración con Gemini fue validada durante las pruebas funcionales realizadas sobre el deployment de Vercel.
 
 - La arquitectura mantiene la integración con el proveedor desacoplada del frontend, permitiendo modificar posteriormente la estrategia de integración sin alterar la estructura principal de la interfaz.
 
-## 10. Revisión y corrección del código
+---
+
+## 10. Límites y validaciones de las solicitudes
+
+- Se decidió establecer límites explícitos para controlar el tamaño de las solicitudes enviadas a Gemini.
+
+- Los límites actuales son:
+
+  ```text
+  Máximo por mensaje:       2000 caracteres
+  Máximo de mensajes:       20
+  Máximo de caracteres:     12000
+  ```
+
+- Estos límites se aplican tanto en el frontend como en el backend.
+
+- El frontend evita enviar un mensaje que supere los 2000 caracteres.
+
+- El frontend limita el historial que se envía al backend a un máximo de 20 mensajes y 12000 caracteres.
+
+- Esta limitación del contexto enviado a la API no elimina ni modifica el historial completo almacenado localmente.
+
+- El backend vuelve a validar los mismos límites antes de realizar la solicitud a Gemini.
+
+- Se decidió realizar la validación también en backend para no depender exclusivamente de las restricciones del cliente.
+
+- Las solicitudes que incumplen los límites se rechazan antes de realizar una petición al servicio externo.
+
+- Se incorporaron pruebas para los valores límite exactos y para los valores que exceden cada restricción.
+
+- Los valores exactos permitidos se verifican mediante pruebas automatizadas:
+  - 2000 caracteres por mensaje;
+  - 20 mensajes;
+  - 12000 caracteres acumulados.
+
+---
+
+## 11. Manejo de errores
+
+- Se decidió evitar mostrar directamente al usuario detalles técnicos innecesarios provenientes de la API.
+
+- El backend conserva respuestas HTTP diferenciadas para representar distintos tipos de fallo.
+
+- El frontend transforma estos estados en mensajes comprensibles para el usuario.
+
+- Para un error **429**, se informa que el servicio de IA alcanzó temporalmente su límite de uso.
+
+- Para errores **500/502**, se informa que el servicio de IA no está disponible en ese momento.
+
+- Para errores de conexión, se informa que no fue posible conectar con el servicio.
+
+- Para otros errores, se muestra un mensaje general solicitando volver a intentar la operación.
+
+- Los detalles técnicos se mantienen disponibles mediante `console.error` para facilitar la depuración sin exponer información innecesaria en la interfaz.
+
+- Se decidió mantener la interfaz disponible después de cualquier error mediante la restauración de los controles en el bloque `finally`.
+
+- Se incorporaron pruebas automatizadas para verificar que los errores no dejen bloqueado el formulario de chat.
+
+---
+
+## 12. Revisión y corrección del código
 
 - Después de completar las funcionalidades principales se realizó una revisión general de los archivos de aplicación, estilos, utilidades y pruebas.
 
@@ -298,9 +396,13 @@
 
 - Se revisó la lógica de navegación para evitar listeners duplicados y mantener un único flujo de interacción para el menú y las rutas.
 
-- Después de estas modificaciones se ejecutaron nuevamente las pruebas automatizadas y se obtuvo el resultado final de **53 pruebas aprobadas**.
+- Se incorporaron pruebas específicas del backend sin modificar innecesariamente `api/functions.js` únicamente para facilitar su testing.
 
-## 11. Producción y deployment
+- Después de estas modificaciones se ejecutaron nuevamente las pruebas automatizadas y se obtuvo el resultado final de **72 pruebas aprobadas de 72**.
+
+---
+
+## 13. Producción y deployment
 
 - Se decidió utilizar **Vercel** como plataforma de deployment del proyecto.
 
@@ -315,15 +417,14 @@
   - integración con Gemini;
   - persistencia del historial;
   - navegación Back/Forward;
-  - recarga directa de las rutas;
-  - recarga mediante `F5`;
-  - rutas con `character` mediante query string.
-
-- Las comprobaciones anteriores fueron realizadas sobre el deployment de producción disponible durante la etapa de validación.
+  - rutas con `character` mediante query string;
+  - funcionamiento de las rutas internas durante la navegación y recarga.
 
 - Se decidió mantener la configuración de deployment sencilla y evitar archivos de configuración adicionales cuando no fueran necesarios.
 
-## 12. Manejo de rutas SPA en producción
+---
+
+## 14. Manejo de rutas SPA en producción
 
 - Durante la validación local con `npx vercel dev` se observó que una recarga directa mediante `F5` sobre rutas como `/chat` o `/chat?character=...` podía devolver `404`.
 
@@ -335,42 +436,39 @@
 
   ```text
   /home
-
   /chat
-
   /chat?character=bugs
-
   /about
   ```
 
-  tanto mediante navegación interna como mediante recarga directa.
+  mediante la navegación de la aplicación y las rutas utilizadas por el proyecto.
 
-- También se comprobó que la recarga mediante `F5` funciona correctamente sobre las rutas internas en el deployment.
+- Las rutas que utilizan el parámetro `character` también se mantienen funcionales en el deployment.
 
-- Las rutas que utilizan el parámetro `character` también se mantienen funcionales después de una recarga.
-
-- Debido a que el deployment de Vercel resuelve correctamente el enrutamiento de la aplicación, **no fue necesario incorporar `vercel.json`**.
+- Debido a que el deployment de Vercel resuelve correctamente el enrutamiento utilizado por la aplicación, **no fue necesario incorporar `vercel.json`**.
 
 - Se decidió mantener el proyecto sin reglas de rewrite adicionales.
 
 - La diferencia observada inicialmente entre el entorno local y el deployment de producción queda documentada como una particularidad del entorno local de desarrollo de Vercel.
 
-- La configuración actual de Vercel es suficiente para el funcionamiento del enrutamiento SPA del proyecto.
+- La configuración actual de Vercel se considera suficiente para el funcionamiento del enrutamiento SPA utilizado por el proyecto.
 
-## 13. Validación final
+---
 
-- Se decidió realizar una revisión final después de completar las mejoras y la integración con Gemini.
+## 15. Validación final
+
+- Se decidió realizar una revisión final después de completar las mejoras, las validaciones backend y la integración con Gemini.
 
 - Se verificaron nuevamente las pruebas automatizadas y el funcionamiento manual de la aplicación.
 
 - La validación automática final alcanzó:
 
   ```text
-  Test Files  2 passed
-  Tests       53 passed
+  Test Files  3 passed (3)
+  Tests       72 passed (72)
   ```
 
-- El resultado final fue **53/53 pruebas aprobadas**, sin errores no controlados durante la ejecución.
+- El resultado final fue **72/72 pruebas aprobadas**, sin pruebas fallidas ni errores no controlados.
 
 - La validación manual confirmó el funcionamiento de:
   - navegación SPA;
@@ -383,24 +481,24 @@
   - estados de carga;
   - bloqueo de nuevos envíos durante el procesamiento;
   - restauración de controles después de la respuesta;
-  - manejo de errores;
+  - manejo diferenciado de errores;
   - diseño responsive;
   - menú hamburguesa;
   - cierre del menú después de navegar;
   - cierre del menú al hacer clic fuera;
+  - estados ARIA del menú;
   - modo claro y oscuro;
   - persistencia del tema;
   - navegación hacia atrás y adelante;
   - vista de conversaciones;
   - presentación visual de los personajes;
   - página About;
-  - recarga mediante `F5`;
-  - rutas directas en producción;
+  - rutas con `character`;
   - integración con Gemini durante la etapa de validación.
 
-- Se comprobó la persistencia del historial después de la navegación y de la recarga de la aplicación en producción.
+- Se comprobó la persistencia del historial después de la navegación y de la recarga de la aplicación.
 
-- Se verificó que las rutas con query string para seleccionar personajes continúan funcionando correctamente después de una recarga.
+- Se verificó que las rutas con query string para seleccionar personajes continúan funcionando correctamente.
 
 - Se realizó además una revisión final del código para identificar errores, código heredado y posibles mejoras sin aumentar innecesariamente la complejidad.
 
@@ -408,11 +506,13 @@
 
 - No se incorporaron nuevas funcionalidades durante la última etapa de testing; el objetivo fue estabilizar y validar el estado alcanzado antes del cierre y la documentación.
 
-- El estado final del código fue publicado en el repositorio mediante el commit correspondiente a las mejoras finales de UX/UI y chat.
+- La documentación se está sincronizando con el estado final del código antes del commit y push correspondiente.
 
-- Con la validación automática y manual completadas, el código del proyecto se consideró técnicamente finalizado.
+- Con la validación automática y manual completadas, el código del proyecto se considera técnicamente finalizado y preparado para el cierre documental y posterior sincronización del repositorio.
 
-## 14. Alcance y complejidad
+---
+
+## 16. Alcance y complejidad
 
 - Se decidió **no resolver mediante complejidad adicional las particularidades internas de los tests** cuando estas no representaban un problema real del funcionamiento de la aplicación.
 
@@ -438,7 +538,9 @@
 
 - Se priorizó que la solución pudiera evolucionar sin introducir prematuramente una arquitectura más compleja de la que requieren sus funcionalidades actuales.
 
-## 15. Principio general de las decisiones
+---
+
+## 17. Principio general de las decisiones
 
 Las decisiones del proyecto siguieron un criterio común:
 
@@ -446,15 +548,17 @@ Las decisiones del proyecto siguieron un criterio común:
 
 A medida que el proyecto evolucionó, las decisiones iniciales fueron revisadas cuando el estado real de la aplicación lo requirió.
 
-La integración con **Gemini**, las mejoras visuales, la protección del contenido renderizado, la navegación SPA, el menú hamburguesa, el modo claro/oscuro y el deployment en **Vercel** se incorporaron únicamente después de validar que aportaban valor al funcionamiento final de la solución.
+La integración con **Gemini**, las mejoras visuales, la protección del contenido renderizado, las validaciones frontend/backend, la navegación SPA, el menú hamburguesa, el modo claro/oscuro y el deployment en **Vercel** se incorporaron únicamente después de validar que aportaban valor al funcionamiento final de la solución.
 
 Las mejoras de UX/UI se realizaron sin modificar innecesariamente la arquitectura general. Se priorizó que las nuevas interacciones, como el menú, las tarjetas clicables, el indicador de escritura y el bloqueo temporal del formulario, se integraran sobre la estructura existente.
 
-La estrategia de routing de producción también fue validada directamente en Vercel. Debido a que las rutas SPA y la recarga mediante `F5` funcionan correctamente en producción, no fue necesario incorporar configuración adicional mediante `vercel.json`.
+La estrategia de routing de producción también fue validada directamente en Vercel. Debido a que las rutas utilizadas por la SPA funcionan correctamente en producción, no fue necesario incorporar configuración adicional mediante `vercel.json`.
 
-El resultado final es una **POC independiente de desarrollo de software**, con navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, protección del contenido renderizado, manejo de estados y errores, integración con inteligencia artificial y deployment en Vercel.
+El resultado final es una **POC independiente de desarrollo de software**, con navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, protección del contenido renderizado, manejo de estados y errores, validaciones frontend/backend, integración con inteligencia artificial y deployment en Vercel.
 
 Su estructura permite utilizarla como **base tecnológica para futuras iteraciones y una eventual evolución hacia un producto**, manteniendo una arquitectura proporcional al alcance actual y evitando complejidad prematura.
+
+---
 
 ## Enlaces relacionados
 

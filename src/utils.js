@@ -29,7 +29,10 @@ export async function fetchData(url, options = {}) {
       errorMessage = data.error || errorMessage;
     }
 
-    throw new Error(errorMessage);
+    const error = new Error(errorMessage);
+    error.status = response.status;
+
+    throw error;
   }
 
   return response.json();

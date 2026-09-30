@@ -22,6 +22,9 @@ const characters = {
 };
 
 const GEMINI_MODEL = "gemini-3.6-flash";
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_HISTORY_MESSAGES = 20;
+const MAX_HISTORY_CHARACTERS = 12000;
 
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
@@ -89,17 +92,30 @@ export default async function handler(request, response) {
   const isValidHistory =
     Array.isArray(history) &&
     history.length > 0 &&
+    history.length <= MAX_HISTORY_MESSAGES &&
     history.every(
       (message) =>
         message &&
         (message.sender === "user" || message.sender === "character") &&
         typeof message.text === "string" &&
-        message.text.trim().length > 0,
+        message.text.trim().length > 0 &&
+        message.text.length <= MAX_MESSAGE_LENGTH,
     );
 
   if (!isValidHistory) {
     return response.status(400).json({
       error: "El historial de conversación no es válido.",
+    });
+  }
+
+  const totalHistoryCharacters = history.reduce(
+    (total, message) => total + message.text.length,
+    0,
+  );
+
+  if (totalHistoryCharacters > MAX_HISTORY_CHARACTERS) {
+    return response.status(400).json({
+      error: "El historial de conversación supera el límite permitido.",
     });
   }
 
