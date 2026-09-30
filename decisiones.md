@@ -506,9 +506,9 @@
 
 - No se incorporaron nuevas funcionalidades durante la última etapa de testing; el objetivo fue estabilizar y validar el estado alcanzado antes del cierre y la documentación.
 
-- La documentación se está sincronizando con el estado final del código antes del commit y push correspondiente.
+- La documentación final fue sincronizada con el estado validado del código y del deployment.
 
-- Con la validación automática y manual completadas, el código del proyecto se considera técnicamente finalizado y preparado para el cierre documental y posterior sincronización del repositorio.
+- El código, las pruebas, la documentación y el deployment quedaron alineados con el alcance final definido para la POC.
 
 ---
 
@@ -560,12 +560,32 @@ Su estructura permite utilizarla como **base tecnológica para futuras iteracion
 
 ---
 
+## Estado final de las decisiones
+
+Las decisiones técnicas y de alcance documentadas en este archivo corresponden al **estado final validado del proyecto**.
+
+El proyecto se considera cerrado en términos de:
+
+- desarrollo;
+- funcionalidades;
+- UX/UI;
+- validaciones;
+- testing;
+- revisión de código;
+- integración con Gemini;
+- deployment;
+- documentación.
+
+No quedan decisiones técnicas pendientes para completar el alcance actual de la POC.
+
+Cualquier funcionalidad, cambio arquitectónico o evolución futura deberá considerarse una nueva iteración del proyecto y evaluarse según su necesidad y aporte funcional.
+
+---
+
 ## Enlaces relacionados
 
 - [`README.md`](README.md) — presentación, instalación, características y estado final del proyecto.
-
-- Demo en Vercel: `https://proyecto-m3-looney-ia-chat.vercel.app/`
-
-- Repositorio en GitHub: `https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat`
+- Demo en Vercel: https://proyecto-m3-looney-ia-chat.vercel.app/
+- Repositorio en GitHub: https://github.com/mllopezc-cmd/Proyecto-M3_Looney_IA_chat
 
 [⬆️ Volver al inicio](#inicio)

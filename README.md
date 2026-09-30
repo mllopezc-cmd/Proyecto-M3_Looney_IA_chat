@@ -1,6 +1,6 @@
 # Looney AI Chat
 
-Aplicación web independiente que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial, desarrollada como una POC con una arquitectura sencilla y fundamentos de software orientados a su posible evolución como producto.
+Aplicación web independiente que presenta una experiencia de chat con personajes de **Looney Tunes** mediante una integración con inteligencia artificial. El proyecto fue desarrollado como una **POC (Proof of Concept)**, utilizando una arquitectura sencilla y fundamentos de software orientados a demostrar una experiencia funcional y permitir su posible evolución futura.
 
 ## 🔗 Enlaces del proyecto
 
@@ -9,7 +9,7 @@ Aplicación web independiente que presenta una experiencia de chat con personaje
 
 ---
 
-El proyecto fue desarrollado como una **POC (Proof of Concept)**, con una arquitectura sencilla y enfocada en demostrar una experiencia de producto funcional mediante conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, persistencia local, integración con una API externa, validaciones, pruebas automatizadas y despliegue en Vercel.
+El proyecto fue desarrollado como una **POC**, con una arquitectura proporcional a su alcance y enfocada en demostrar conceptos de desarrollo web, navegación SPA, manejo de estado en el navegador, persistencia local, integración con una API externa, validaciones, pruebas automatizadas y despliegue en Vercel.
 
 ## Presentación
 
@@ -23,9 +23,9 @@ Actualmente se encuentran disponibles:
 
 Cada personaje cuenta con información propia, como descripción, personalidad y saludo inicial.
 
-Las conversaciones se almacenan en `localStorage`, permitiendo conservar el historial independiente de cada personaje dentro del navegador.
+Las conversaciones se almacenan en `localStorage`, permitiendo conservar un historial independiente para cada personaje dentro del navegador.
 
-La aplicación también integra **Gemini** mediante una función backend ubicada en `api/functions.js`. La clave de API se mantiene como variable de entorno y no se expone directamente en el frontend.
+La aplicación integra **Gemini** mediante una función backend ubicada en `api/functions.js`. La clave de API se mantiene como variable de entorno y no se expone directamente en el frontend.
 
 > **Nota:** El proyecto es una POC independiente orientada a demostrar una experiencia de software funcional y una base tecnológica susceptible de evolución. No pretende reproducir oficialmente a los personajes ni representa una arquitectura de producción definitiva.
 
@@ -83,7 +83,7 @@ La implementación utiliza estos personajes como parte del contexto de una POC d
 - Validación de mensajes vacíos o con espacios.
 - Validación del tamaño máximo de los mensajes.
 - Indicador visual de escritura durante la generación de respuestas.
-- Animación del indicador de escritura mediante `Escribiendo.`, `Escribiendo..` y `Escribiendo...`.
+- Animación del indicador mediante `Escribiendo.`, `Escribiendo..` y `Escribiendo...`.
 - Bloqueo de nuevos envíos mientras se procesa una respuesta.
 - Bloqueo temporal de la acción de limpiar el historial durante el procesamiento.
 - Restauración de los controles después de una respuesta exitosa o fallida.
@@ -147,7 +147,7 @@ La integración se encuentra en:
 api/functions.js
 ```
 
-El frontend envía el historial de la conversación y el identificador del personaje a la función backend.
+El frontend envía el identificador del personaje y el historial de conversación a la función backend.
 
 La función backend:
 
@@ -165,11 +165,11 @@ La función backend:
 - envía la conversación a Gemini;
 - procesa la respuesta;
 - devuelve la respuesta generada al frontend;
-- maneja errores de la API.
+- maneja los errores de la API.
 
 La clave de API no se almacena en el código frontend ni se incluye directamente en el repositorio.
 
-No se utiliza un SDK adicional de Google para la integración; se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
+No se utiliza un SDK adicional de Google para la integración. La comunicación se realiza mediante `fetch`, manteniendo la arquitectura sencilla de la POC.
 
 ### Límites de las solicitudes
 
@@ -308,7 +308,6 @@ El proyecto mantiene una arquitectura deliberadamente sencilla para facilitar su
 
 ```text
 Looney AI Chat/
-
 ├── api/
 │   └── functions.js
 ├── src/
@@ -420,7 +419,9 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [`README.md`](README.md) — presentación general, características, arquitectura, instalación, testing y estado final.
 - [`decisiones.md`](decisiones.md) — principales decisiones tomadas durante el desarrollo y los criterios utilizados para mantener una arquitectura sencilla.
 
-## Estado del proyecto
+Ambos documentos se consideran parte de la documentación final del proyecto.
+
+## Estado final del proyecto
 
 - [x] Desarrollo de la estructura inicial
 - [x] Implementación de la navegación SPA
@@ -443,7 +444,7 @@ La documentación principal del proyecto se concentra en los siguientes archivos
 - [x] Validación automática
 - [x] Validación manual
 - [x] Revisión final del código
-- [x] Revisión de documentación
+- [x] Revisión final de documentación
 - [x] Preparación para despliegue en Vercel
 - [x] Validación del deployment
 - [x] Documentación de decisiones técnicas
@@ -462,7 +463,7 @@ La aplicación desplegada funciona correctamente mediante la navegación interna
 
 Por este motivo, no fue necesario agregar `vercel.json` ni otra configuración adicional para solucionar el comportamiento observado exclusivamente durante la ejecución local de `vercel dev`.
 
-Esta particularidad se mantiene documentada como una diferencia del entorno local de desarrollo frente al deployment utilizado para la validación.
+Esta particularidad queda documentada como una diferencia observada entre el entorno local de desarrollo y el deployment utilizado para la validación.
 
 ## Enfoque del proyecto
 
@@ -486,6 +487,8 @@ La integración con Gemini se implementó mediante una función backend sencilla
 
 Las imágenes de los personajes se mantienen como recursos locales dentro de `src/assets/characters/`, evitando dependencias externas para su presentación visual.
 
-El proyecto queda finalizado como una **POC independiente de desarrollo de software**, con frontend, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, validaciones backend, integración con inteligencia artificial y deployment en Vercel.
+El proyecto queda **finalizado como una POC independiente de desarrollo de software**, con frontend, navegación SPA, persistencia local, conversaciones independientes por personaje, pruebas automatizadas, validaciones backend, integración con inteligencia artificial y deployment en Vercel.
 
 Su estructura permite utilizarlo como base para futuras iteraciones y una eventual evolución hacia un producto, manteniendo una arquitectura proporcional al alcance actual y evitando complejidad prematura.
+
+**Estado final:** proyecto desarrollado, validado, documentado, versionado y desplegado.
